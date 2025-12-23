@@ -18,11 +18,22 @@ import {
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-400 font-sans selection:bg-emerald-500/30 antialiased overflow-x-hidden">
-      {/* Structural Background */}
+      
+      {/* --- NEW BACKGROUND START --- */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-125 bg-emerald-500/5 blur-[120px] rounded-full" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#141414_1px,transparent_1px),linear-gradient(to_bottom,#141414_1px,transparent_1px)] bg-size-[32px_32px]" />
+        {/* Deep ambient glow (Top Left) */}
+        <div className="absolute top-[10%] left-[2%] w-125 h-125 bg-emerald-500/17 rounded-full blur-[120px] mix-blend-screen" />
+        
+        {/* Secondary ambient glow (Bottom Right) */}
+        <div className="absolute bottom-[9%] right-[10%] w-125 h-150 bg-emerald-500/15 rounded-full blur-[120px] mix-blend-screen" />
+        
+        {/* Subtle Grid Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[40px_40px] opacity-30" />
+        
+        {/* Grain/Noise Texture for "premium" feel */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
       </div>
+      {/* --- NEW BACKGROUND END --- */}
 
       {/* Navigation */}
       <nav className="relative z-10 flex items-center justify-between px-8 py-3 border-b border-zinc-900 bg-zinc-950 backdrop-blur-xl">
@@ -74,7 +85,7 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-4 pt-4 font-mono">
               <button
                 onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-                className=" rounded-md px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
+                className=" rounded-md px-8 py-4 bg-emerald-700 hover:bg-emerald-500 text-white text-sm font-bold transition-all shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
               >
                 START ANALYSIS
               </button>

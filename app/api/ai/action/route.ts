@@ -4,13 +4,11 @@ import { getToken } from "next-auth/jwt";
 import { githubFetch } from "@/app/lib/githubFetch";
 import { normaliseGitHubData } from "@/app/lib/normalizeGitHubData";
 import { buildPrompt } from "@/app/lib/promptGenerator";
-import { geminiModel } from "@/app/lib/gemini";
+import { runLLM } from "@/app/lib/llm";
 
 export async function POST(req: Request) {
   try {
-    console.log("AI/ACTION api HIT");
-
-    // 1️⃣ Auth
+    // Auth check
     const session = await getServerSession(authOptions);
     if (!session) {
       return Response.json(
@@ -19,7 +17,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2️⃣ Token
+    // Token
     const token = await getToken({ req: req as any });
     const githubAccessToken = token?.githubAccessToken as string;
     const githubUsername = token?.githubUsername as string;
@@ -31,7 +29,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3️⃣ Action
+    // Action
     const { action } = await req.json();
     if (!action) {
       return Response.json(
@@ -40,38 +38,39 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4️⃣ Fetch GitHub data (stateless)
+    //  Fetch GitHub data (stateless)
     const user = await githubFetch("/user", githubAccessToken);
-    const repos = await githubFetch("/user/repos?per_page=100", githubAccessToken);
+    const repos = await githubFetch(
+      "/user/repos?per_page=100",
+      githubAccessToken
+    );
     const events = await githubFetch(
       `/users/${githubUsername}/events`,
       githubAccessToken
     );
 
-    const profile = normaliseGitHubData(user, repos, events);
+    const profile = await normaliseGitHubData(user, repos, events);
 
-    // 5️⃣ Prompt
+    //  Prompt
     const prompt = buildPrompt(action, profile);
 
-    // 6️⃣ Gemini call
-    let raw: string;
-
+    //  Groq call
+    let raw: string | null;
     try {
-      const result = await geminiModel.generateContent(prompt);
-      raw = result.response.text();
+      raw = await runLLM(prompt);
     } catch (err) {
-      console.error("Gemini failed:", err);
+      console.error("LLM failed:", err);
       return Response.json(
-        { success: false, error: "Gemini API failed" },
+        { success: false, error: "LLM API failed" },
         { status: 500 }
       );
     }
 
     if (!raw) {
-      throw new Error("Empty Gemini response");
+      throw new Error("Empty LLM response");
     }
 
-    // 7️⃣ Parse JSON
+    //  Parse JSON
     let parsed;
     try {
       parsed = JSON.parse(raw);
@@ -79,20 +78,19 @@ export async function POST(req: Request) {
       return Response.json(
         {
           success: false,
-          error: "Invalid JSON returned by Gemini",
+          error: "Invalid JSON returned by LLM",
           raw,
         },
         { status: 500 }
       );
     }
 
-    // 8️⃣ Success
+    //  Success
     return Response.json({
       success: true,
       action,
       data: parsed,
     });
-
   } catch (err: any) {
     console.error("AI ACTION CRASHED:", err);
     return Response.json(

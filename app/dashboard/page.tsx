@@ -5,7 +5,7 @@ import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Zap, Search, MessageSquareWarning, Lightbulb, 
-  ArrowLeft, Cpu
+  ArrowLeft, Cpu, Sparkles
 } from "lucide-react";
 
 const actions = [
@@ -13,7 +13,6 @@ const actions = [
   { key: "suggest", label: "Suggest", icon: <Lightbulb className="w-5 h-5" />, color: "from-yellow-500/10 to-transparent", border: "hover:border-yellow-500/50", text: "text-yellow-400", desc: "AI-driven skill growth and contribution roadmap." },
   { key: "improve", label: "Improve", icon: <Zap className="w-5 h-5" />, color: "from-emerald-500/10 to-transparent", border: "hover:border-emerald-500/50", text: "text-emerald-400", desc: "Automated repo refactoring and optimization tips." },
   { key: "roast", label: "Roast", icon: <MessageSquareWarning className="w-5 h-5" />, color: "from-red-500/10 to-transparent", border: "hover:border-red-500/50", text: "text-red-400", desc: "A brutally honest critique of your commit history." },
-
 ];
 
 export default function AIActionsPage() {
@@ -44,88 +43,134 @@ export default function AIActionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-400 font-mono selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-black text-zinc-400 font-sans selection:bg-emerald-500/30 relative overflow-hidden">
+      
+      {/* --- VIBRANT BACKGROUND LAYERS --- */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[24px_24px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,#10b9810a,transparent_50%)]" />
+        {/* Deep ambient glow (Top Left) */}
+        <div className="absolute top-[10%] left-[10%] w-125 h-125 bg-emerald-500/17 rounded-full blur-[120px] mix-blend-screen" />
+        
+        {/* Secondary ambient glow (Bottom Right) */}
+        <div className="absolute bottom-[-1%] right-[10%] w-125 h-125 bg-emerald-500/15 rounded-full blur-[120px] mix-blend-screen" />
+        
+        {/* Subtle Grid Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[40px_40px] opacity-30" />
+        
+        {/* Grain/Noise Texture for "premium" feel */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
       </div>
 
-      <div className="max-w-2xl mx-auto relative z-10 px-6 py-12">
+      <div className="max-w-2xl mx-auto relative z-10 px-6 py-8">
         <AnimatePresence mode="wait">
           {!activeAction ? (
             <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-8"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+              transition={{ duration: 0.3 }}
+              className="space-y-12"
             >
-              <div className="flex flex-col items-center text-center space-y-2">
-                <div className="flex items-center gap-2 text-emerald-500/80 text-[10px] tracking-[0.3em] font-bold uppercase mb-2">
-                  <Cpu className="w-3 h-3" />
-                  <span>System Ready</span>
-                </div>
-                <h1 className="text-4xl font-bold text-white tracking-tight mt-6">AI ACTION SPACE</h1>
-                <p className="text-zinc-500 text-sm max-w-sm mt-3 mb-7">Select an action to initialize analysis.</p>
+              <div className="flex flex-col items-center text-center space-y-4 ">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="inline-flex items-center gap-2 px-3 py-1 mb-20 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-[10px] tracking-[0.3em] font-bold uppercase backdrop-blur-md shadow-lg shadow-emerald-900/20"
+                >
+                  <Cpu className="w-3 h-3 " />
+                  <span>LLM CONNECTED</span>
+                </motion.div>
+                
+                <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-2xl mb-6">
+                  COMMAND HUB
+                </h1>
+                
+                <p className="text-zinc-400 text-base max-w-md font-medium leading-relaxed">
+                  Select an operation below
+                </p>
               </div>
 
               {/* Vertical Stack Implementation */}
               <div className="flex flex-col gap-4">
-                {actions.map((a) => (
+                {actions.map((a, i) => (
                   <motion.button
-                    whileHover={{ x: 4 }}
-                    whileTap={{ scale: 0.99 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.15 + (i * 0.05) }}
+                    whileHover={{ scale: 1.02, x: 4 }}
+                    whileTap={{ scale: 0.98 }}
                     key={a.key}
                     onClick={() => runAction(a.key)}
-                    className={`group relative p-4 rounded-lg border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm transition-all text-left flex items-center gap-6 ${a.border}`}
+                    // Keeping the card structure exactly as requested, focusing on how it sits on the background
+                    className={`group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 ${a.border} hover:shadow-2xl hover:shadow-black/50`}
                   >
-                    <div className={`absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity rounded-lg`} />
+                    <div className={`absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`} />
                     
                     {/* Icon Column */}
-                    <div className={`${a.text} relative z-10 p-3 bg-zinc-950 rounded-md border border-zinc-800`}>
+                    <div className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}>
                       {a.icon}
                     </div>
 
                     {/* Content Column */}
                     <div className="relative z-10 flex-1">
-                      <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-1">{a.label}</h3>
-                      <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight group-hover:text-zinc-300 transition-colors">
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1 flex items-center gap-2">
+                        {a.label}
+                        <ArrowLeft className="w-3 h-3 opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all rotate-180 text-white/50" />
+                      </h3>
+                      <p className="text-xs text-zinc-500 font-medium leading-relaxed group-hover:text-zinc-300 transition-colors">
                         {a.desc}
                       </p>
                     </div>
 
                     {/* Decorative Terminal End */}
-                    <div className="relative z-10 text-[10px] text-zinc-700 font-bold hidden sm:block">
-                      RUN_&gt;
+                    <div className="relative z-10 text-[10px] text-zinc-800 font-mono font-bold hidden sm:block group-hover:text-white/20 transition-colors">
+                      EXEC_
                     </div>
                   </motion.button>
                 ))}
               </div>
             </motion.div>
           ) : (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <div className="flex items-center justify-between py-2 border-b border-zinc-800">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between py-4 border-b border-white/5">
                 <button 
                   onClick={() => { setActiveAction(null); setResult(null); }}
-                  className="flex items-center gap-2 text-xs text-zinc-500 hover:text-white transition-colors uppercase font-bold tracking-widest"
+                  className="flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
                 >
-                  <ArrowLeft className="w-3 h-3" /> Back
+                  <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" /> 
+                  Return to Hub
                 </button>
-                <div className="text-[10px] text-zinc-600 font-mono">
+                <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono bg-white/5 px-2 py-1 rounded">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   ACTION::{activeAction?.toUpperCase()}
                 </div>
               </div>
 
               {loading ? (
-                <div className="flex flex-col items-center justify-center py-24 space-y-4">
-                  <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-[10px] text-emerald-500 uppercase tracking-[0.2em] animate-pulse font-bold">Processing_Data</p>
+                <div className="flex flex-col items-center justify-center py-32 space-y-6">
+                  <div className="relative">
+                    <div className="w-12 h-12 border-2 border-white/10 rounded-full" />
+                    <div className="absolute inset-0 w-12 h-12 border-2 border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
+                  </div>
+                  <p className="text-xs text-emerald-500/80 uppercase tracking-[0.3em] animate-pulse font-bold">
+                    Analyzing Data Stream...
+                  </p>
                 </div>
               ) : error ? (
-                <div className="p-4 rounded border border-red-500/20 bg-red-500/5 text-[12px] text-red-400 text-center">
-                  {error}
-                </div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-6 rounded-xl border border-red-500/20 bg-red-500/10 backdrop-blur-md text-sm text-red-200 text-center shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+                >
+                  <p className="font-bold mb-1">Execution Failed</p>
+                  <span className="opacity-70">{error}</span>
+                </motion.div>
               ) : (
-                <div className="bg-zinc-900/30 rounded-xl border border-zinc-800 p-6 backdrop-blur-sm">
+                <div className="bg-zinc-900/40 rounded-2xl border border-white/10 p-8 backdrop-blur-xl shadow-2xl">
                    <ResultDisplay action={activeAction} data={result} />
                 </div>
               )}
