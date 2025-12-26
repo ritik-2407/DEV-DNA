@@ -81,17 +81,17 @@ export default function AIActionsPage() {
                   <span>LLM CONNECTED</span>
                 </motion.div>
                 
-                <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-2xl mb-6">
+                <h1 className="cursor-default text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-2xl mb-6">
                   COMMAND HUB
                 </h1>
                 
-                <p className="text-zinc-400 text-base max-w-md font-medium leading-relaxed">
+                <p className="cursor-default text-zinc-400 text-base max-w-md font-medium leading-relaxed">
                   Select an operation below
                 </p>
               </div>
 
               {/* Vertical Stack Implementation */}
-              <div className="flex flex-col gap-4">
+              <div className=" flex flex-col gap-4">
                 {actions.map((a, i) => (
                   <motion.button
                     initial={{ opacity: 0, x: -20 }}
@@ -102,9 +102,9 @@ export default function AIActionsPage() {
                     key={a.key}
                     onClick={() => runAction(a.key)}
                     // Keeping the card structure exactly as requested, focusing on how it sits on the background
-                    className={`group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 ${a.border} hover:shadow-2xl hover:shadow-black/50`}
+                    className={`cursor-pointer group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 ${a.border} hover:shadow-2xl hover:shadow-black/50`}
                   >
-                    <div className={`absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`} />
+                    <div className={` absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`} />
                     
                     {/* Icon Column */}
                     <div className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}>

@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import {
+  Gavel,
   Github,
   Terminal,
   Zap,
@@ -13,6 +14,7 @@ import {
   Activity,
   Globe,
   Lock,
+  ChartLine,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -41,7 +43,7 @@ export default function LandingPage() {
           <Image src="/icon.png" alt="app-icon" width={16} height={16} className="h-6 w-6"/>
 
           <div className="flex flex-col">
-            <span className="font-bold text-white text-xl tracking-widest uppercase">
+            <span className="cursor-default font-bold text-white text-xl tracking-widest uppercase">
               Dev DNA
             </span>
           </div>
@@ -49,9 +51,9 @@ export default function LandingPage() {
         <div className="flex items-center gap-6">
           <button
             onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-zinc-100 text-black hover:bg-emerald-400 transition-all rounded-sm"
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-zinc-100 text-black hover:bg-emerald-400 transition-all rounded-sm"
           >
-            <Github className="w-3.5 h-3.5" />
+            <Github className=" w-3.5 h-3.5" />
             Login
           </button>
         </div>
@@ -61,7 +63,7 @@ export default function LandingPage() {
         {/* Hero Area: More Filled & Balanced */}
         <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-16 items-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-3 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+            <div className="cursor-default inline-flex items-center gap-3 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 text-[11px] font-mono uppercase tracking-widest text-zinc-500">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -69,14 +71,14 @@ export default function LandingPage() {
               LLM Engine Active
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9]">
+            <h1 className="cursor-default text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9]">
               Decode your <br />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-emerald-200 to-zinc-500">
                 Developer Identity.
               </span>
             </h1>
 
-            <p className="max-w-xl text-lg text-zinc-500 font-light leading-relaxed">
+            <p className="cursor-default max-w-xl text-lg text-zinc-500 font-light leading-relaxed">
               We bridge the gap between commit history and career trajectory.
               Get instant, LLM-powered audits on your code quality,
               architecture, and professional reputation.
@@ -85,18 +87,18 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-4 pt-4 font-mono">
               <button
                 onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-                className=" rounded-md px-8 py-4 bg-emerald-700 hover:bg-emerald-500 text-white text-sm font-bold transition-all shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
+                className=" cursor-pointer rounded-md px-8 py-4 bg-emerald-700 hover:bg-emerald-500 text-white text-sm font-bold transition-all shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
               >
                 START ANALYSIS
               </button>
-              <div className="flex items-center gap-4 px-6 border border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest rounded-md">
+              <div className="cursor-default flex items-center gap-4 px-6 border border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest rounded-md">
                 <Activity className="w-3 h-3" /> 1,240 Profiles Scanned
               </div>
             </div>
           </div>
 
           {/* Fill the "Empty Space" on the right with a dense visual */}
-          <div className="hidden lg:block">
+          <div className="cursor-default hidden lg:block">
             <div className="p-8 border border-zinc-800 bg-zinc-950/50 rounded-lg relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 font-mono text-[10px] text-emerald-500/20">
                 LOG_v01.12
@@ -108,14 +110,14 @@ export default function LandingPage() {
                 </div>
                 <div className="space-y-1 text-[11px]">
                   <p className="text-zinc-600">
-                    Checking: react-hooks-architecture...
+                    Checking: recent commits...
                   </p>
-                  <p className="text-zinc-600">Scanning: complexity_index...</p>
+                  <p className="text-zinc-600">Scanning: public repositories...</p>
                   <p className="text-yellow-500/80 tracking-tighter">
-                    ! Warning: Circular dependency in /lib/auth
+                    ! Warning: 3 exploitations found in /lib/auth
                   </p>
                   <p className="text-red-500/80">
-                    ! Critical: Hardcoded API Key in .env.example
+                    ! Critical: llm.model.rate_limit capping 80%
                   </p>
                 </div>
                 <div className="pt-4 flex gap-2">
@@ -124,7 +126,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <p className="text-white uppercase font-bold text-[10px]">
-                  Processing DNA Sequence...
+                  Processing Github Stream...
                 </p>
               </div>
             </div>
@@ -133,7 +135,8 @@ export default function LandingPage() {
 
         {/* Dense Feature Section */}
         <section className="mt-32">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-900 border border-zinc-900">
+          {/* CHANGED: Removed 'gap-px bg-zinc-900' hack. Added 'gap-6'. */}
+          <div className="cursor-default grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureBox
               icon={<Search className="w-5 h-5 " />}
               label=""
@@ -147,22 +150,24 @@ export default function LandingPage() {
               desc="AI-driven suggestions for specific skills and projects to level up your market value."
             />
             <FeatureBox
-              icon={<Zap className="w-5 h-5" />}
+              icon={<ChartLine className="w-5 h-5" />}
               label=""
               title="IMPROVE"
               desc="Targeted improvements for repository structure and modern best-practice implementation."
             />
             <FeatureBox
-              icon={<MessageSquareWarning className="w-5 h-5" />}
+              icon={<Gavel className="w-5 h-5" />}
               label=""
-              title="ROAST"
-              desc="Brutal feedback on your 'temp' fixes, spaghetti logic, and inconsistent commit messages."
+              title="JUDGE"
+              desc="Judges the most recent commits to give users a better feedback of their changes."
             />
+
+            
           </div>
         </section>
 
         {/* Security / Trust Bar */}
-        <div className="mt-12 flex flex-wrap justify-between items-center px-8 py-6 border border-zinc-900 bg-zinc-950/20 gap-8">
+        <div className="mt-12 flex flex-wrap justify-between items-center px-8 py-6 border border-zinc-900 bg-zinc-950/20 gap-8 rounded-xl">
           <div className="flex items-center gap-3">
             <Lock className="w-4 h-4 text-zinc-700" />
             <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
@@ -184,6 +189,7 @@ export default function LandingPage() {
   );
 }
 
+// CHANGED: Added 'rounded-2xl', 'border border-zinc-900', and kept the colors.
 function FeatureBox({
   icon,
   label,
@@ -196,7 +202,7 @@ function FeatureBox({
   desc: string;
 }) {
   return (
-    <div className="bg-[#050505] p-8 space-y-4 hover:bg-zinc-950 transition-all group">
+    <div className="bg-[#050505] border border-zinc-900 rounded-2xl p-8 space-y-4 hover:bg-zinc-950 hover:border-zinc-800 transition-all duration-300 group">
       <div className="text-emerald-500 group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
