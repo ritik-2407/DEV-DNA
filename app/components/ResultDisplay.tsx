@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronRight, Check, AlertCircle, Target, TrendingUp, Zap, Shield } from "lucide-react";
+import { Gavel , CheckCircle ,ArrowLeft, ChevronRight, Check, AlertCircle, Target, TrendingUp, Zap, Shield } from "lucide-react";
 
 // --- TYPES ---
 interface ActionResponse {
@@ -24,6 +24,14 @@ interface ActionResponse {
   improvements?: string[];
   missingPractices?: string[];
   refactorSuggestions?: string[];
+
+  //judge fields
+  verdict?: string;
+  commitDiscipline?: string;
+  whatYourCommitsReveal?: string;
+  redFlags?: string[];
+  whatYouShouldFixImmediately?: string[];
+  judgeClosingRemark?: string;
   
   // Roast fields
   hardTruths?: string[];
@@ -97,10 +105,9 @@ const InfoSection = ({
 };
 
 const QuoteBlock = ({ text }: { text: string }) => (
-  <div className="relative py-12 px-8 bg-linear-to-br from-zinc-900/50 to-zinc-900/20 border border-zinc-800 rounded-lg">
-    <div className="absolute top-6 left-6 text-6xl text-zinc-800 font-serif">"</div>
-    <p className="text-white text-xl font-light leading-relaxed italic relative z-10 pl-8">
-      {text}
+  <div className="p-8 bg-zinc-900/30 border border-zinc-800 rounded-lg">
+    <p className="text-zinc-200 text-lg font-light leading-relaxed">
+      "{text}"
     </p>
   </div>
 );
@@ -284,6 +291,85 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           )}
         </motion.div>
       )}
+
+      {/* JUDGE VIEW */}
+      {action === "judge" && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-16"
+        >
+          {/* Verdict Header */}
+          <div className="flex flex-col md:flex-row gap-6 items-start justify-between border-b border-zinc-800 pb-8">
+            <div className="space-y-2">
+              <h3 className="text-3xl text-white font-light tracking-tight flex items-center gap-3">
+                <Gavel className="w-6 h-6 text-zinc-500" />
+                Engineering Verdict
+              </h3>
+              <p className="text-zinc-500 text-sm font-mono">
+                Based on commit discipline & consistency
+              </p>
+            </div>
+            
+            {data.verdict && (
+              <div className={`px-5 py-2 rounded-full border text-sm font-bold uppercase tracking-widest ${
+                data.verdict.toLowerCase().includes("positive") 
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                  : data.verdict.toLowerCase().includes("negative")
+                  ? "bg-red-500/10 text-red-400 border-red-500/20"
+                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+              }`}>
+                {data.verdict}
+              </div>
+            )}
+          </div>
+
+          {/* Analysis Cards */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {data.commitDiscipline && (
+              <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-lg space-y-3">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Commit Discipline</span>
+                <p className="text-zinc-300 leading-relaxed">{data.commitDiscipline}</p>
+              </div>
+            )}
+            {data.whatYourCommitsReveal && (
+              <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-lg space-y-3">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Code DNA</span>
+                <p className="text-zinc-300 leading-relaxed">{data.whatYourCommitsReveal}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Actionable Feedback Grid */}
+          <div className="grid md:grid-cols-2 gap-12">
+            {data.redFlags && data.redFlags.length > 0 && (
+              <InfoSection 
+                title="Red Flags Detected" 
+                items={data.redFlags}
+                icon={AlertCircle}
+                variant="negative"
+              />
+            )}
+            {data.whatYouShouldFixImmediately && data.whatYouShouldFixImmediately.length > 0 && (
+              <InfoSection 
+                title="Immediate Fixes" 
+                items={data.whatYouShouldFixImmediately}
+                icon={CheckCircle}
+                variant="warning"
+              />
+            )}
+          </div>
+
+          {/* Final Verdict Quote */}
+          {data.judgeClosingRemark && (
+            <div className="pt-8">
+              <QuoteBlock text={data.judgeClosingRemark} />
+            </div>
+          )}
+        </motion.div>
+      )}
+      
 
       {/* ROAST VIEW */}
       {action === "roast" && (

@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         cached: true,
       });
     }
-    console.log("further llm API hit")
+    console.log("further llm API hit");
     //  Fetch GitHub data (stateless)
     const user = await githubFetch("/user", githubAccessToken);
     const repos = await githubFetch(
@@ -63,7 +63,36 @@ export async function POST(req: Request) {
       githubAccessToken
     );
 
-    const profile = await normaliseGitHubData(user, repos, events);
+    const recentRepos = repos
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      )
+      .slice(0, 3);
+
+    const recentCommits: any[] = [];
+
+    for (const repo of recentRepos) {
+      const commits = await githubFetch(
+        `/repos/${user.login}/${repo.name}/commits?per_page=5`,
+        githubAccessToken
+      );
+
+      commits.forEach((c: any) => {
+        recentCommits.push({
+          repo: repo.name,
+          message: c.commit.message,
+          date: c.commit.author.date,
+        });
+      });
+    }
+
+    const profile = await normaliseGitHubData(
+      user,
+      repos,
+      events,
+      recentCommits
+    );
 
     //  Prompt
     const prompt = buildPrompt(action, profile);
@@ -88,7 +117,7 @@ export async function POST(req: Request) {
     let parsed;
     try {
       parsed = JSON.parse(raw);
-      setCachedLLM(cacheKey , parsed)
+      setCachedLLM(cacheKey, parsed);
     } catch {
       return Response.json(
         {

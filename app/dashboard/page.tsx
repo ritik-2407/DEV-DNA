@@ -5,14 +5,15 @@ import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Zap, Search, MessageSquareWarning, Lightbulb, 
-  ArrowLeft, Cpu, Sparkles
+  ArrowLeft, Cpu, Sparkles, Gavel, AlertTriangle, CheckCircle // Added Gavel, AlertTriangle, CheckCircle
 } from "lucide-react";
 
 const actions = [
   { key: "analyze", label: "Analyze", icon: <Search className="w-5 h-5" />, color: "from-blue-500/10 to-transparent", border: "hover:border-blue-500/50", text: "text-blue-400", desc: "Full profile audit and metadata extraction." },
-  { key: "suggest", label: "Suggest", icon: <Lightbulb className="w-5 h-5" />, color: "from-yellow-500/10 to-transparent", border: "hover:border-yellow-500/50", text: "text-yellow-400", desc: "AI-driven skill growth and contribution roadmap." },
+  { key: "judge", label: "Judge", icon: <Gavel className="w-5 h-5" />, color: "from-orange-500/10 to-transparent", border: "hover:border-orange-500/50", text: "text-orange-400", desc: "Strict judgement based on your recent commit activities." },
   { key: "improve", label: "Improve", icon: <Zap className="w-5 h-5" />, color: "from-emerald-500/10 to-transparent", border: "hover:border-emerald-500/50", text: "text-emerald-400", desc: "Automated repo refactoring and optimization tips." },
-  { key: "roast", label: "Roast", icon: <MessageSquareWarning className="w-5 h-5" />, color: "from-red-500/10 to-transparent", border: "hover:border-red-500/50", text: "text-red-400", desc: "A brutally honest critique of your commit history." },
+  { key: "suggest", label: "Suggest", icon: <Lightbulb className="w-5 h-5" />, color: "from-yellow-500/10 to-transparent", border: "hover:border-yellow-500/50", text: "text-yellow-400", desc: "AI-driven skill growth and contribution roadmap." },
+  { key: "roast", label: "Roast", icon: <MessageSquareWarning className="w-5 h-5" />, color: "from-red-500/10 to-transparent", border: "hover:border-red-500/50", text: "text-red-400", desc: "A honest critique of your profile and stats." },
 ];
 
 export default function AIActionsPage() {
@@ -70,7 +71,7 @@ export default function AIActionsPage() {
               transition={{ duration: 0.3 }}
               className="space-y-12"
             >
-              <div className="flex flex-col items-center text-center space-y-4 ">
+              <div className="cursor-default flex flex-col items-center text-center space-y-4 ">
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

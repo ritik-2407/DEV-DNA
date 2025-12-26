@@ -1,18 +1,23 @@
-export async function normaliseGitHubData( user :any , repos: any[] , events: any[]){
+export async function normaliseGitHubData(
+  user: any,
+  repos: any[],
+  events: any[],
+  recentCommits: any[]
+) {
+  const now = Date.now();
 
-    const now = Date.now()
+  const createdAt = new Date(user.created_at).getTime();
 
-    const createdAt = new Date(user.created_at).getTime()
+  const languages: Record<string, number> = {};
 
-    const languages : Record<string , number> ={}
+  repos.forEach((repo) => {
+    if (repo.lannguage) {
+      languages[repo.language] = (languages[repo.language] || 0) + 1;
+    }
+  });
 
-    repos.forEach((repo) => {
-        if(repo.lannguage){
-            languages[repo.languages] = (languages[repo.language] || 0 ) + 1
-        }
-    })
-
-    return {
+  
+  return {
     user: {
       username: user.login,
       name: user.name,
@@ -41,9 +46,11 @@ export async function normaliseGitHubData( user :any , repos: any[] , events: an
 
     activity: {
       recentEventsCount: events.length,
-      pushEvents: events.filter(e => e.type === "PushEvent").length,
-      prEvents: events.filter(e => e.type === "PullRequestEvent").length,
-      issueEvents: events.filter(e => e.type === "IssuesEvent").length,
+      pushEvents: events.filter((e) => e.type === "PushEvent").length,
+      prEvents: events.filter((e) => e.type === "PullRequestEvent").length,
+      issueEvents: events.filter((e) => e.type === "IssuesEvent").length,
     },
-  }
+
+    recentCommits,
+  };
 }
