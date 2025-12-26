@@ -124,7 +124,7 @@ export default function AIActionsPage() {
 
                     {/* Decorative Terminal End */}
                     <div className="relative z-10 text-[10px] text-zinc-800 font-mono font-bold hidden sm:block group-hover:text-white/20 transition-colors">
-                      EXEC_
+                      RUN_
                     </div>
                   </motion.button>
                 ))}

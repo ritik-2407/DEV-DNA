@@ -5,6 +5,7 @@ import { githubFetch } from "@/app/lib/githubFetch";
 import { normaliseGitHubData } from "@/app/lib/normalizeGitHubData";
 import { buildPrompt } from "@/app/lib/promptGenerator";
 import { runLLM } from "@/app/lib/llm";
+import { getCachedLLM, setCachedLLM } from "@/app/lib/llmCache";
 
 export async function POST(req: Request) {
   try {
@@ -38,6 +39,19 @@ export async function POST(req: Request) {
       );
     }
 
+    const cacheKey = `${githubUsername}::${action}`;
+
+    const cached = getCachedLLM(cacheKey);
+
+    if (cached) {
+      return Response.json({
+        success: true,
+        action,
+        data: cached,
+        cached: true,
+      });
+    }
+    console.log("further llm API hit")
     //  Fetch GitHub data (stateless)
     const user = await githubFetch("/user", githubAccessToken);
     const repos = await githubFetch(
@@ -74,6 +88,7 @@ export async function POST(req: Request) {
     let parsed;
     try {
       parsed = JSON.parse(raw);
+      setCachedLLM(cacheKey , parsed)
     } catch {
       return Response.json(
         {
