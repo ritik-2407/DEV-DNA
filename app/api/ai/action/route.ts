@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session) {
       return Response.json(
-        { success: false, error: "Unauthorized" },
+        { success: false, error: "Unauthorized, please Log in again." },
         { status: 401 }
       );
     }
@@ -64,6 +64,7 @@ export async function POST(req: Request) {
     );
 
     const recentRepos = repos
+      .filter((r: any) => r.size > 0 && r.default_branch)
       .sort(
         (a: any, b: any) =>
           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()

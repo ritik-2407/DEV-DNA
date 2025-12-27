@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
+
 import { 
   Zap, Search, MessageSquareWarning, Lightbulb, 
-  ArrowLeft, Cpu, Sparkles, Gavel, AlertTriangle, CheckCircle // Added Gavel, AlertTriangle, CheckCircle
+  ArrowLeft, Cpu, Sparkles, Gavel, AlertTriangle, CheckCircle , LogOut // Added Gavel, AlertTriangle, CheckCircle
 } from "lucide-react";
 
 const actions = [
@@ -42,6 +44,12 @@ export default function AIActionsPage() {
       setLoading(false);
     }
   }
+
+  async function handleLogout() {
+  await fetch("/api/logout", { method: "POST" });
+  await signOut({ callbackUrl: "/" });
+}
+
 
   return (
     <div className="min-h-screen bg-black text-zinc-400 font-sans selection:bg-emerald-500/30 relative overflow-hidden">
@@ -129,6 +137,19 @@ export default function AIActionsPage() {
                     </div>
                   </motion.button>
                 ))}
+
+                <motion.button
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 0.5 }}
+    onClick={handleLogout}
+    className="cursor-pointer mt-8 mx-auto group flex items-center gap-3 px-5 py-2 rounded-full text-zinc-600 hover:text-zinc-300 transition-all duration-300"
+  >
+    <LogOut className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+    <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100">
+      LOG OUT
+    </span>
+  </motion.button>
               </div>
             </motion.div>
           ) : (
