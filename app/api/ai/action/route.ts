@@ -74,18 +74,23 @@ export async function POST(req: Request) {
     const recentCommits: any[] = [];
 
     for (const repo of recentRepos) {
-      const commits = await githubFetch(
-        `/repos/${user.login}/${repo.name}/commits?per_page=5`,
-        githubAccessToken
-      );
+      try {
+        const commits = await githubFetch(
+          `/repos/${repo.full_name}/commits?per_page=5`,
+          githubAccessToken
+        );
 
-      commits.forEach((c: any) => {
-        recentCommits.push({
-          repo: repo.name,
-          message: c.commit.message,
-          date: c.commit.author.date,
+        commits.forEach((c: any) => {
+          recentCommits.push({
+            repo: repo.full_name,
+            message: c.commit.message,
+            date: c.commit.author.date,
+          });
         });
-      });
+      } catch (err: any) {
+        // 404, 409, restricted org repo, archived repo → skip
+        continue;
+      }
     }
 
     const profile = await normaliseGitHubData(
