@@ -466,7 +466,7 @@ export default function AIActionsPage() {
                className="space-y-16"
              >
                 <div className="space-y-4">
-                  <h1 className="text-4xl font-light text-white tracking-tight">GitHub Assistant</h1>
+                  <h1 className="text-4xl font-light text-white tracking-tight"></h1>
                   <p className="text-lg text-zinc-500 font-light">Choose an analysis to perform on your profile.</p>
                 </div>
 
@@ -475,7 +475,7 @@ export default function AIActionsPage() {
                     <button 
                       key={a.key} 
                       onClick={() => runAction(a.key)}
-                      className="group flex items-center justify-between py-8 px-6 border border-zinc-900 rounded-lg w-full text-left transition-all hover:border-zinc-700 hover:bg-zinc-900/30"
+                      className=" group flex items-center justify-between py-8 px-6 border border-zinc-900 rounded-lg w-full text-left transition-all hover:border-zinc-700 hover:bg-zinc-900/30"
                     >
                       <div className="flex items-center gap-6">
                         <div className="w-12 h-12 rounded-lg bg-zinc-900 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">

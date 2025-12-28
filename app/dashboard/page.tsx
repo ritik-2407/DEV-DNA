@@ -5,17 +5,66 @@ import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { 
-  Zap, Search, MessageSquareWarning, Lightbulb, 
-  ArrowLeft, Cpu, Sparkles, Gavel, AlertTriangle, CheckCircle , LogOut // Added Gavel, AlertTriangle, CheckCircle
+import {
+  Zap,
+  Search,
+  MessageSquareWarning,
+  Lightbulb,
+  ArrowLeft,
+  Cpu,
+  Sparkles,
+  Gavel,
+  AlertTriangle,
+  CheckCircle,
+  LogOut, // Added Gavel, AlertTriangle, CheckCircle
 } from "lucide-react";
 
 const actions = [
-  { key: "analyze", label: "Analyze", icon: <Search className="w-5 h-5" />, color: "from-blue-500/10 to-transparent", border: "hover:border-blue-500/50", text: "text-blue-400", desc: "Full profile audit and metadata extraction." },
-  { key: "judge", label: "Judge", icon: <Gavel className="w-5 h-5" />, color: "from-orange-500/10 to-transparent", border: "hover:border-orange-500/50", text: "text-orange-400", desc: "Strict judgement based on your recent commit activities." },
-  { key: "improve", label: "Improve", icon: <Zap className="w-5 h-5" />, color: "from-emerald-500/10 to-transparent", border: "hover:border-emerald-500/50", text: "text-emerald-400", desc: "Automated repo refactoring and optimization tips." },
-  { key: "suggest", label: "Suggest", icon: <Lightbulb className="w-5 h-5" />, color: "from-yellow-500/10 to-transparent", border: "hover:border-yellow-500/50", text: "text-yellow-400", desc: "AI-driven skill growth and contribution roadmap." },
-  { key: "roast", label: "Roast", icon: <MessageSquareWarning className="w-5 h-5" />, color: "from-red-500/10 to-transparent", border: "hover:border-red-500/50", text: "text-red-400", desc: "A honest critique of your profile and stats." },
+  {
+    key: "analyze",
+    label: "Analyze",
+    icon: <Search className="w-5 h-5" />,
+    color: "from-blue-500/10 to-transparent",
+    border: "hover:border-blue-500/50",
+    text: "text-blue-400",
+    desc: "Full profile audit and metadata extraction.",
+  },
+  {
+    key: "judge",
+    label: "Judge",
+    icon: <Gavel className="w-5 h-5" />,
+    color: "from-orange-500/10 to-transparent",
+    border: "hover:border-orange-500/50",
+    text: "text-orange-400",
+    desc: "Strict judgement based on your recent commit activities.",
+  },
+  {
+    key: "improve",
+    label: "Improve",
+    icon: <Zap className="w-5 h-5" />,
+    color: "from-emerald-500/10 to-transparent",
+    border: "hover:border-emerald-500/50",
+    text: "text-emerald-400",
+    desc: "Automated repo refactoring and optimization tips.",
+  },
+  {
+    key: "suggest",
+    label: "Suggest",
+    icon: <Lightbulb className="w-5 h-5" />,
+    color: "from-yellow-500/10 to-transparent",
+    border: "hover:border-yellow-500/50",
+    text: "text-yellow-400",
+    desc: "AI-driven skill growth and contribution roadmap.",
+  },
+  {
+    key: "roast",
+    label: "Roast",
+    icon: <MessageSquareWarning className="w-5 h-5" />,
+    color: "from-red-500/10 to-transparent",
+    border: "hover:border-red-500/50",
+    text: "text-red-400",
+    desc: "A honest critique of your profile and stats.",
+  },
 ];
 
 export default function AIActionsPage() {
@@ -46,33 +95,36 @@ export default function AIActionsPage() {
   }
 
   async function handleLogout() {
-  await fetch("/api/logout", { method: "POST" });
-  await signOut({ callbackUrl: "/" });
-}
-
+    await fetch("/api/logout", { method: "POST" });
+    await signOut({ callbackUrl: "/" });
+  }
 
   return (
     <div className="min-h-screen bg-black text-zinc-400 font-sans selection:bg-emerald-500/30 relative overflow-hidden">
-      
       {/* --- VIBRANT BACKGROUND LAYERS --- */}
       <div className="fixed inset-0 z-0">
         {/* Deep ambient glow (Top Left) */}
         <div className="absolute top-[10%] left-[10%] w-125 h-125 bg-emerald-500/17 rounded-full blur-[120px] mix-blend-screen" />
-        
+
         {/* Secondary ambient glow (Bottom Right) */}
         <div className="absolute bottom-[-1%] right-[10%] w-125 h-125 bg-emerald-500/15 rounded-full blur-[120px] mix-blend-screen" />
-        
+
         {/* Subtle Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[40px_40px] opacity-30" />
-        
+
         {/* Grain/Noise Texture for "premium" feel */}
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+        <div
+          className="absolute inset-0 opacity-[0.02] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          }}
+        />
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10 px-6 py-8">
         <AnimatePresence mode="wait">
           {!activeAction ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
@@ -80,7 +132,7 @@ export default function AIActionsPage() {
               className="space-y-12"
             >
               <div className="cursor-default flex flex-col items-center text-center space-y-4 ">
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
@@ -89,11 +141,11 @@ export default function AIActionsPage() {
                   <Cpu className="w-3 h-3 " />
                   <span>LLM CONNECTED</span>
                 </motion.div>
-                
+
                 <h1 className="cursor-default text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-2xl mb-6">
                   COMMAND HUB
                 </h1>
-                
+
                 <p className="cursor-default text-zinc-400 text-base max-w-md font-medium leading-relaxed">
                   Select an operation below
                 </p>
@@ -105,18 +157,21 @@ export default function AIActionsPage() {
                   <motion.button
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + (i * 0.05) }}
+                    transition={{ delay: 0.15 + i * 0.05 }}
                     whileHover={{ scale: 1.02, x: 4 }}
                     whileTap={{ scale: 0.98 }}
                     key={a.key}
                     onClick={() => runAction(a.key)}
-                    // Keeping the card structure exactly as requested, focusing on how it sits on the background
                     className={`cursor-pointer group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 ${a.border} hover:shadow-2xl hover:shadow-black/50`}
                   >
-                    <div className={` absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`} />
-                    
+                    <div
+                      className={` absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`}
+                    />
+
                     {/* Icon Column */}
-                    <div className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}>
+                    <div
+                      className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}
+                    >
                       {a.icon}
                     </div>
 
@@ -139,31 +194,34 @@ export default function AIActionsPage() {
                 ))}
 
                 <motion.button
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 0.5 }}
-    onClick={handleLogout}
-    className="cursor-pointer mt-8 mx-auto group flex items-center gap-3 px-5 py-2 rounded-full text-zinc-600 hover:text-zinc-300 transition-all duration-300"
-  >
-    <LogOut className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-    <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100">
-      LOG OUT
-    </span>
-  </motion.button>
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  onClick={handleLogout}
+                  className="cursor-pointer mt-8 mx-auto group flex items-center gap-3 px-5 py-2 rounded-full text-zinc-600 hover:text-zinc-300 transition-all duration-300"
+                >
+                  <LogOut className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100">
+                    LOG OUT
+                  </span>
+                </motion.button>
               </div>
             </motion.div>
           ) : (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
               <div className="flex items-center justify-between py-4 border-b border-white/5">
-                <button 
-                  onClick={() => { setActiveAction(null); setResult(null); }}
-                  className="flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
+                <button
+                  onClick={() => {
+                    setActiveAction(null);
+                    setResult(null);
+                  }}
+                  className="cursor-pointer flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
                 >
-                  <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" /> 
+                  <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
                   Return to Hub
                 </button>
                 <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono bg-white/5 px-2 py-1 rounded">
@@ -183,7 +241,7 @@ export default function AIActionsPage() {
                   </p>
                 </div>
               ) : error ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="p-6 rounded-xl border border-red-500/20 bg-red-500/10 backdrop-blur-md text-sm text-red-200 text-center shadow-[0_0_30px_rgba(239,68,68,0.1)]"
@@ -193,7 +251,7 @@ export default function AIActionsPage() {
                 </motion.div>
               ) : (
                 <div className="bg-zinc-900/40 rounded-2xl border border-white/10 p-8 backdrop-blur-xl shadow-2xl">
-                   <ResultDisplay action={activeAction} data={result} />
+                  <ResultDisplay action={activeAction} data={result} />
                 </div>
               )}
             </motion.div>
