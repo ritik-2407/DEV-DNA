@@ -213,22 +213,7 @@ export default function AIActionsPage() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <div className="flex items-center justify-between py-4 border-b border-white/5">
-                <button
-                  onClick={() => {
-                    setActiveAction(null);
-                    setResult(null);
-                  }}
-                  className="cursor-pointer flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
-                >
-                  <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-                  Return to Hub
-                </button>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono bg-white/5 px-2 py-1 rounded">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  ACTION::{activeAction?.toUpperCase()}
-                </div>
-              </div>
+              
 
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-32 space-y-6">
@@ -254,6 +239,23 @@ export default function AIActionsPage() {
                   <ResultDisplay action={activeAction} data={result} />
                 </div>
               )}
+
+              <div className="flex items-center justify-between py-4 border-b border-white/5">
+                <button
+                  onClick={() => {
+                    setActiveAction(null);
+                    setResult(null);
+                  }}
+                  className="cursor-pointer flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
+                >
+                  <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+                  Return to Hub
+                </button>
+                <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono bg-white/5 px-2 py-1 rounded">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  ACTION::{activeAction?.toUpperCase()}
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
