@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,11 +13,8 @@ import {
   Lightbulb,
   ArrowLeft,
   Cpu,
-  Sparkles,
   Gavel,
-  AlertTriangle,
-  CheckCircle,
-  LogOut, // Added Gavel, AlertTriangle, CheckCircle
+  LogOut,
 } from "lucide-react";
 
 const actions = [
@@ -68,21 +66,29 @@ const actions = [
 ];
 
 export default function AIActionsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // URL State: Source of Truth
+  const activeAction = searchParams.get("action");
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [activeAction, setActiveAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function runAction(action: string) {
+  /**
+   * CORE LOGIC: The actual API call
+   * Wrapped in useCallback so it doesn't trigger useEffect loops
+   */
+  const executeAction = useCallback(async (actionKey: string) => {
     setLoading(true);
     setError(null);
-    setActiveAction(action);
 
     try {
       const res = await fetch("/api/ai/action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action: actionKey }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Unknown error");
@@ -92,7 +98,34 @@ export default function AIActionsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  /**
+   * EFFECT: Handles History Navigation (Back/Forward) & Refresh
+   */
+  useEffect(() => {
+    if (activeAction) {
+      // If we have an action in URL but no result, fetch it
+      // This triggers on 'Forward' and Page Refresh
+      if (!result && !loading) {
+        executeAction(activeAction);
+      }
+    } else {
+      // If URL is cleared, clear the UI
+      // This triggers on 'Back'
+      setResult(null);
+      setError(null);
+    }
+  }, [activeAction, result, loading, executeAction]);
+
+  const runAction = (actionKey: string) => {
+    // Only update the URL. The useEffect above will catch this and call the API.
+    router.push(`?action=${actionKey}`);
+  };
+
+  const handleReturn = () => {
+    router.push("/dashboard"); 
+  };
 
   async function handleLogout() {
     await fetch("/api/logout", { method: "POST" });
@@ -103,16 +136,9 @@ export default function AIActionsPage() {
     <div className="min-h-screen bg-black text-zinc-400 font-sans selection:bg-emerald-500/30 relative overflow-hidden">
       {/* --- VIBRANT BACKGROUND LAYERS --- */}
       <div className="fixed inset-0 z-0">
-        {/* Deep ambient glow (Top Left) */}
         <div className="absolute top-[10%] left-[10%] w-125 h-125 bg-emerald-500/17 rounded-full blur-[120px] mix-blend-screen" />
-
-        {/* Secondary ambient glow (Bottom Right) */}
         <div className="absolute bottom-[-1%] right-[10%] w-125 h-125 bg-emerald-500/15 rounded-full blur-[120px] mix-blend-screen" />
-
-        {/* Subtle Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[40px_40px] opacity-30" />
-
-        {/* Grain/Noise Texture for "premium" feel */}
         <div
           className="absolute inset-0 opacity-[0.02] pointer-events-none"
           style={{
@@ -125,6 +151,7 @@ export default function AIActionsPage() {
         <AnimatePresence mode="wait">
           {!activeAction ? (
             <motion.div
+              key="hub"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
@@ -135,7 +162,6 @@ export default function AIActionsPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
                   className="inline-flex items-center gap-2 px-3 py-1 mb-20 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-[10px] tracking-[0.3em] font-bold uppercase backdrop-blur-md shadow-lg shadow-emerald-900/20"
                 >
                   <Cpu className="w-3 h-3 " />
@@ -145,37 +171,27 @@ export default function AIActionsPage() {
                 <h1 className="cursor-default text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-2xl mb-6">
                   COMMAND HUB
                 </h1>
-
                 <p className="cursor-default text-zinc-400 text-base max-w-md font-medium leading-relaxed">
                   Select an operation below
                 </p>
               </div>
 
-              {/* Vertical Stack Implementation */}
-              <div className=" flex flex-col gap-4">
+              <div className="flex flex-col gap-4">
                 {actions.map((a, i) => (
                   <motion.button
+                    key={a.key}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15 + i * 0.05 }}
                     whileHover={{ scale: 1.02, x: 4 }}
                     whileTap={{ scale: 0.98 }}
-                    key={a.key}
                     onClick={() => runAction(a.key)}
                     className={`cursor-pointer group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 ${a.border} hover:shadow-2xl hover:shadow-black/50`}
                   >
-                    <div
-                      className={` absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`}
-                    />
-
-                    {/* Icon Column */}
-                    <div
-                      className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}
-                    >
+                    <div className={`absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`} />
+                    <div className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}>
                       {a.icon}
                     </div>
-
-                    {/* Content Column */}
                     <div className="relative z-10 flex-1">
                       <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1 flex items-center gap-2">
                         {a.label}
@@ -185,8 +201,6 @@ export default function AIActionsPage() {
                         {a.desc}
                       </p>
                     </div>
-
-                    {/* Decorative Terminal End */}
                     <div className="relative z-10 text-[10px] text-zinc-800 font-mono font-bold hidden sm:block group-hover:text-white/20 transition-colors">
                       RUN_
                     </div>
@@ -194,27 +208,22 @@ export default function AIActionsPage() {
                 ))}
 
                 <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
                   onClick={handleLogout}
                   className="cursor-pointer mt-8 mx-auto group flex items-center gap-3 px-5 py-2 rounded-full text-zinc-600 hover:text-zinc-300 transition-all duration-300"
                 >
                   <LogOut className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100">
-                    LOG OUT
-                  </span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase">LOG OUT</span>
                 </motion.button>
               </div>
             </motion.div>
           ) : (
             <motion.div
+              key="result"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
               className="space-y-6"
             >
-              
-
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-32 space-y-6">
                   <div className="relative">
@@ -235,17 +244,14 @@ export default function AIActionsPage() {
                   <span className="opacity-70">{error}</span>
                 </motion.div>
               ) : (
-                <div className="bg-zinc-900/40 rounded-2xl border border-white/10 p-8 backdrop-blur-xl shadow-2xl">
+                <div className="bg-zinc-900/40 rounded-2xl border border-white/10 px-8 backdrop-blur-xl shadow-2xl">
                   <ResultDisplay action={activeAction} data={result} />
                 </div>
               )}
 
               <div className="flex items-center justify-between py-4 border-b border-white/5">
                 <button
-                  onClick={() => {
-                    setActiveAction(null);
-                    setResult(null);
-                  }}
+                  onClick={handleReturn}
                   className="cursor-pointer flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
                 >
                   <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />

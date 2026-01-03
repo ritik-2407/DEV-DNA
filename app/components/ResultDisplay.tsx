@@ -139,10 +139,7 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <div className="inline-flex items-center gap-2 text-zinc-500 text-xs font-medium uppercase tracking-widest">
-          <Check className="w-3 h-3" /> Analysis Complete
-        </div>
-        <h2 className="text-5xl font-light text-white tracking-tight capitalize">
+        <h2 className="text-4xl  font-bold text-center uppercase  text-white tracking-wider ">
           {action}
         </h2>
       </motion.div>
@@ -153,26 +150,19 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="space-y-16"
+          className="space-y-6"
         >
           {/* Skill Level & Developer Type */}
-          <div className="space-y-6">
-            {data.skillLevel && <SkillLevelBadge level={data.skillLevel} />}
+          <div className="mb-16">
             {data.developerType && (
-              <h3 className="text-3xl text-white font-light tracking-tight">
-                {data.developerType}
-              </h3>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-4">
+                Current Level
+              </h4>
             )}
+            {data.skillLevel && <SkillLevelBadge level={data.skillLevel} />}
           </div>
 
-          {/* Current Reality */}
-          {data.currentReality && (
-            <div className="p-8 bg-zinc-900/30 border border-zinc-800 rounded-lg">
-              <p className="text-zinc-300 text-lg font-light leading-relaxed">
-                {data.currentReality}
-              </p>
-            </div>
-          )}
+            
 
           {/* Strengths & Weaknesses Grid */}
           <div className="grid md:grid-cols-2 gap-12">
@@ -196,12 +186,24 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
 
           {/* Potential */}
           {data.yourPotentialIfYouAct && (
-            <div className="pt-12 border-t border-zinc-800">
+            <div className="pt-12 border-t border-zinc-800 mb-12">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-6">
                 Your Potential
               </h4>
               <p className="text-xl text-zinc-200 font-light leading-relaxed">
                 {data.yourPotentialIfYouAct}
+              </p>
+            </div>
+          )}
+
+          <h4 className="text-xl font-semibold uppercase tracking-widest text-zinc-300 mb-6">
+                Summary
+              </h4>
+          {/* Current Reality */}
+          {data.currentReality && (
+            <div className="p-8 mt-1 bg-zinc-900/30 border border-zinc-800 rounded-lg">
+              <p className="text-zinc-300 text-lg font-light leading-relaxed">
+                {data.currentReality}
               </p>
             </div>
           )}
