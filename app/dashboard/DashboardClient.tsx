@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
+import UserProfile from "../components/UserProfile"; // Import the card
 
 import {
   Zap,
@@ -69,21 +70,37 @@ export default function DashboardClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // URL State: Source of Truth
   const activeAction = searchParams.get("action");
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // GitHub Profile State
+  const [profileData, setProfileData] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
-  /**
-   * CORE LOGIC: The actual API call
-   * Wrapped in useCallback so it doesn't trigger useEffect loops
-   */
+  // Fetch GitHub Profile
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await fetch("/api/github/profile");
+        if (res.ok) {
+          const data = await res.json();
+          setProfileData(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile", err);
+      } finally {
+        setProfileLoading(false);
+      }
+    }
+    fetchProfile();
+  }, []);
+
   const executeAction = useCallback(async (actionKey: string) => {
     setLoading(true);
     setError(null);
-
     try {
       const res = await fetch("/api/ai/action", {
         method: "POST",
@@ -100,26 +117,18 @@ export default function DashboardClient() {
     }
   }, []);
 
-  /**
-   * EFFECT: Handles History Navigation (Back/Forward) & Refresh
-   */
   useEffect(() => {
     if (activeAction) {
-      // If we have an action in URL but no result, fetch it
-      // This triggers on 'Forward' and Page Refresh
       if (!result && !loading) {
         executeAction(activeAction);
       }
     } else {
-      // If URL is cleared, clear the UI
-      // This triggers on 'Back'
       setResult(null);
       setError(null);
     }
   }, [activeAction, result, loading, executeAction]);
 
   const runAction = (actionKey: string) => {
-    // Only update the URL. The useEffect above will catch this and call the API.
     router.push(`?action=${actionKey}`);
   };
 
@@ -134,17 +143,11 @@ export default function DashboardClient() {
 
   return (
     <div className="min-h-screen bg-black text-zinc-400 font-sans selection:bg-emerald-500/30 relative overflow-hidden">
-      {/* --- VIBRANT BACKGROUND LAYERS --- */}
+      {/* Background Layers */}
       <div className="fixed inset-0 z-0">
         <div className="absolute top-[10%] left-[10%] w-125 h-125 bg-emerald-500/17 rounded-full blur-[120px] mix-blend-screen" />
         <div className="absolute bottom-[-1%] right-[10%] w-125 h-125 bg-emerald-500/15 rounded-full blur-[120px] mix-blend-screen" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[40px_40px] opacity-30" />
-        <div
-          className="absolute inset-0 opacity-[0.02] pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10 px-6 py-8">
@@ -158,21 +161,27 @@ export default function DashboardClient() {
               transition={{ duration: 0.3 }}
               className="space-y-12"
             >
-              <div className="cursor-default flex flex-col items-center text-center space-y-4 ">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="inline-flex items-center gap-2 px-3 py-1 mb-20 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-[10px] tracking-[0.3em] font-bold uppercase backdrop-blur-md shadow-lg shadow-emerald-900/20"
-                >
-                  <Cpu className="w-3 h-3 " />
-                  <span>LLM CONNECTED</span>
-                </motion.div>
+              {/* Profile Card Section */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="flex justify-center"
+              >
+                {profileLoading ? (
+                  <div className="w-full h-64 rounded-2xl bg-zinc-900/50 animate-pulse border border-white/5" />
+                ) : profileData && (
+                  <UserProfile data={profileData} />
+                )}
+              </motion.div>
 
-                <h1 className="cursor-default text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-2xl mb-6">
-                  COMMAND HUB
-                </h1>
-                <p className="cursor-default text-zinc-400 text-base max-w-md font-medium leading-relaxed">
+              <div className="cursor-default flex flex-col items-center text-center space-y-4 ">
+                
+
+                 <p className="cursor-default text-zinc-400 text-base max-w-md font-medium leading-relaxed">
+
                   Select an operation below
+
                 </p>
               </div>
 
@@ -182,7 +191,7 @@ export default function DashboardClient() {
                     key={a.key}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + i * 0.05 }}
+                    transition={{ delay: 0.2 + i * 0.05 }}
                     whileHover={{ scale: 1.02, x: 4 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => runAction(a.key)}
@@ -200,9 +209,6 @@ export default function DashboardClient() {
                       <p className="text-xs text-zinc-500 font-medium leading-relaxed group-hover:text-zinc-300 transition-colors">
                         {a.desc}
                       </p>
-                    </div>
-                    <div className="relative z-10 text-[10px] text-zinc-800 font-mono font-bold hidden sm:block group-hover:text-white/20 transition-colors">
-                      RUN_
                     </div>
                   </motion.button>
                 ))}
@@ -238,7 +244,7 @@ export default function DashboardClient() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="p-6 rounded-xl border border-red-500/20 bg-red-500/10 backdrop-blur-md text-sm text-red-200 text-center shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+                  className="p-6 rounded-xl border border-red-500/20 bg-red-500/10 backdrop-blur-md text-sm text-red-200 text-center"
                 >
                   <p className="font-bold mb-1">Execution Failed</p>
                   <span className="opacity-70">{error}</span>

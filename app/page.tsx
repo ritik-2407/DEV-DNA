@@ -180,7 +180,7 @@ export default function LandingPage() {
               <span className="text-[10px] text-zinc-500">API_CONNECTED</span>
             </div>
             <div className="flex items-center gap-2 text-zinc-700">
-              <span className="text-[10px]">v1.0.4-STABLE</span>
+              <span className="text-[10px]">v0.3-STABLE</span>
             </div>
           </div>
         </div>
