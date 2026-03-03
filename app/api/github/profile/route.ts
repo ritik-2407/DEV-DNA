@@ -27,6 +27,15 @@ query ($login: String!) {
     repositories(ownerAffiliations: OWNER, first: 100) {
       nodes {
         stargazerCount
+        forkCount
+        languages(first: 5, orderBy: {field: SIZE, direction: DESC}) {
+          edges {
+            size
+            node {
+              name
+            }
+          }
+        }
       }
     }
   }
@@ -35,7 +44,6 @@ query ($login: String!) {
 
 export async function GET(req: Request) {
   try {
-    // Auth (JWT)
     const token = await getToken({ req: req as any });
 
     const githubAccessToken = token?.githubAccessToken as string;
@@ -48,7 +56,6 @@ export async function GET(req: Request) {
       );
     }
 
-    // GitHub GraphQL call
     const res = await fetch(GITHUB_GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
@@ -59,7 +66,6 @@ export async function GET(req: Request) {
         query: GITHUB_PROFILE_QUERY,
         variables: { login: githubUsername },
       }),
-      // profile data changes slowly → safe to cache
       next: { revalidate: 60 * 60 * 6 }, // 6 hours
     });
 
@@ -80,26 +86,41 @@ export async function GET(req: Request) {
       0
     );
 
-    // Shape clean response
+    // Aggregate forks
+    const totalForks = user.repositories.nodes.reduce(
+      (sum: number, repo: any) => sum + repo.forkCount,
+      0
+    );
+
+    // Aggregate language bytes across all repos
+    const languageMap: Record<string, number> = {};
+    for (const repo of user.repositories.nodes) {
+      for (const edge of repo.languages?.edges ?? []) {
+        const name = edge.node.name;
+        languageMap[name] = (languageMap[name] ?? 0) + edge.size;
+      }
+    }
+
     const response = {
       username: user.login,
       name: user.name,
       avatar: user.avatarUrl,
       followers: user.followers.totalCount,
       stars: totalStars,
+      forks: totalForks,
       repoCount: user.repositories.nodes.length,
+      languages: languageMap,
       contributions: {
         total:
           user.contributionsCollection.contributionCalendar.totalContributions,
-        weeks:
-          user.contributionsCollection.contributionCalendar.weeks.map(
-            (week: any) =>
-              week.contributionDays.map((day: any) => ({
-                date: day.date,
-                count: day.contributionCount,
-                color: day.color,
-              }))
-          ),
+        weeks: user.contributionsCollection.contributionCalendar.weeks.map(
+          (week: any) =>
+            week.contributionDays.map((day: any) => ({
+              date: day.date,
+              count: day.contributionCount,
+              color: day.color,
+            }))
+        ),
       },
     };
 

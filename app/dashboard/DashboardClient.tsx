@@ -5,98 +5,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { motion, AnimatePresence } from "framer-motion";
-import UserProfile from "../components/UserProfile"; // Import the card
-
-import {
-  Zap,
-  Search,
-  MessageSquareWarning,
-  Lightbulb,
-  ArrowLeft,
-  Cpu,
-  Gavel,
-  LogOut,
-} from "lucide-react";
-
-const actions = [
-  {
-    key: "analyze",
-    label: "Analyze",
-    icon: <Search className="w-5 h-5" />,
-    color: "from-blue-500/10 to-transparent",
-    border: "hover:border-blue-500/50",
-    text: "text-blue-400",
-    desc: "Full profile audit and metadata extraction.",
-  },
-  {
-    key: "judge",
-    label: "Judge",
-    icon: <Gavel className="w-5 h-5" />,
-    color: "from-orange-500/10 to-transparent",
-    border: "hover:border-orange-500/50",
-    text: "text-orange-400",
-    desc: "Strict judgement based on your recent commit activities.",
-  },
-  {
-    key: "improve",
-    label: "Improve",
-    icon: <Zap className="w-5 h-5" />,
-    color: "from-emerald-500/10 to-transparent",
-    border: "hover:border-emerald-500/50",
-    text: "text-emerald-400",
-    desc: "Automated repo refactoring and optimization tips.",
-  },
-  {
-    key: "suggest",
-    label: "Suggest",
-    icon: <Lightbulb className="w-5 h-5" />,
-    color: "from-yellow-500/10 to-transparent",
-    border: "hover:border-yellow-500/50",
-    text: "text-yellow-400",
-    desc: "AI-driven skill growth and contribution roadmap.",
-  },
-  {
-    key: "roast",
-    label: "Roast",
-    icon: <MessageSquareWarning className="w-5 h-5" />,
-    color: "from-red-500/10 to-transparent",
-    border: "hover:border-red-500/50",
-    text: "text-red-400",
-    desc: "A honest critique of your profile and stats.",
-  },
-];
+import { ArrowLeft, BarChart2, Zap } from "lucide-react";
+import StatsSection from "./sections/StatsSection";
+import ActionsSection from "./sections/ActionsSection";
 
 export default function DashboardClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const activeAction = searchParams.get("action");
 
+  const [activeTab, setActiveTab] = useState<"stats" | "actions">("stats");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  
-  // GitHub Profile State
-  const [profileData, setProfileData] = useState<any>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
-
-  // Fetch GitHub Profile
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await fetch("/api/github/profile");
-        if (res.ok) {
-          const data = await res.json();
-          setProfileData(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch profile", err);
-      } finally {
-        setProfileLoading(false);
-      }
-    }
-    fetchProfile();
-  }, []);
 
   const executeAction = useCallback(async (actionKey: string) => {
     setLoading(true);
@@ -133,7 +54,7 @@ export default function DashboardClient() {
   };
 
   const handleReturn = () => {
-    router.push("/dashboard"); 
+    router.push("/dashboard");
   };
 
   async function handleLogout() {
@@ -150,6 +71,34 @@ export default function DashboardClient() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-size-[40px_40px] opacity-30" />
       </div>
 
+      {/* Navbar */}
+      <AnimatePresence>
+        {!activeAction && (
+          <motion.header
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10 flex items-center justify-center pt-8 pb-4 px-6"
+          >
+            <div className="flex items-center gap-1 border border-white/5 bg-zinc-900/60 backdrop-blur-xl rounded-full p-1">
+              <NavTab
+                label="Stats"
+                icon={<BarChart2 className="w-3.5 h-3.5" />}
+                active={activeTab === "stats"}
+                onClick={() => setActiveTab("stats")}
+              />
+              <NavTab
+                label="Actions"
+                icon={<Zap className="w-3.5 h-3.5" />}
+                active={activeTab === "actions"}
+                onClick={() => setActiveTab("actions")}
+              />
+            </div>
+          </motion.header>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-2xl mx-auto relative z-10 px-6 py-8">
         <AnimatePresence mode="wait">
           {!activeAction ? (
@@ -159,68 +108,33 @@ export default function DashboardClient() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
               transition={{ duration: 0.3 }}
-              className="space-y-12"
             >
-              {/* Profile Card Section */}
-              <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="flex justify-center"
-              >
-                {profileLoading ? (
-                  <div className="w-full h-64 rounded-2xl bg-zinc-900/50 animate-pulse border border-white/5" />
-                ) : profileData && (
-                  <UserProfile data={profileData} />
-                )}
-              </motion.div>
-
-              <div className="cursor-default flex flex-col items-center text-center space-y-4 ">
-                
-
-                 <p className="cursor-default text-zinc-400 text-base max-w-md font-medium leading-relaxed">
-
-                  Select an operation below
-
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                {actions.map((a, i) => (
-                  <motion.button
-                    key={a.key}
-                    initial={{ opacity: 0, x: -20 }}
+              <AnimatePresence mode="wait">
+                {activeTab === "stats" ? (
+                  <motion.div
+                    key="stats"
+                    initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + i * 0.05 }}
-                    whileHover={{ scale: 1.02, x: 4 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => runAction(a.key)}
-                    className={`cursor-pointer group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 ${a.border} hover:shadow-2xl hover:shadow-black/50`}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.25 }}
                   >
-                    <div className={`absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`} />
-                    <div className={`${a.text} relative z-10 p-3 bg-black/50 rounded-lg border border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300`}>
-                      {a.icon}
-                    </div>
-                    <div className="relative z-10 flex-1">
-                      <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1 flex items-center gap-2">
-                        {a.label}
-                        <ArrowLeft className="w-3 h-3 opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all rotate-180 text-white/50" />
-                      </h3>
-                      <p className="text-xs text-zinc-500 font-medium leading-relaxed group-hover:text-zinc-300 transition-colors">
-                        {a.desc}
-                      </p>
-                    </div>
-                  </motion.button>
-                ))}
-
-                <motion.button
-                  onClick={handleLogout}
-                  className="cursor-pointer mt-8 mx-auto group flex items-center gap-3 px-5 py-2 rounded-full text-zinc-600 hover:text-zinc-300 transition-all duration-300"
-                >
-                  <LogOut className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase">LOG OUT</span>
-                </motion.button>
-              </div>
+                    <StatsSection />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="actions"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 16 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <ActionsSection
+                      onRunAction={runAction}
+                      onLogout={handleLogout}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           ) : (
             <motion.div
@@ -273,5 +187,39 @@ export default function DashboardClient() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+// ── NavTab sub-component ──────────────────────────────────────────────────────
+function NavTab({
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`cursor-pointer relative flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
+        active
+          ? "text-emerald-400"
+          : "text-zinc-500 hover:text-zinc-300"
+      }`}
+    >
+      {active && (
+        <motion.div
+          layoutId="activeTab"
+          className="absolute inset-0 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        />
+      )}
+      <span className="relative z-10">{icon}</span>
+      <span className="relative z-10">{label}</span>
+    </button>
   );
 }
