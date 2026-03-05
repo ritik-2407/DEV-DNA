@@ -11,7 +11,7 @@ export async function normaliseGitHubData(
   const languages: Record<string, number> = {};
 
   repos.forEach((repo) => {
-    if (repo.lannguage) {
+    if (repo.language) {
       languages[repo.language] = (languages[repo.language] || 0) + 1;
     }
   });

@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import ResultSkeleton from "../components/ResultSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BarChart2, Zap } from "lucide-react";
 import StatsSection from "./sections/StatsSection";
@@ -145,15 +147,7 @@ export default function DashboardClient() {
               className="space-y-6"
             >
               {loading ? (
-                <div className="flex flex-col items-center justify-center py-32 space-y-6">
-                  <div className="relative">
-                    <div className="w-12 h-12 border-2 border-white/10 rounded-full" />
-                    <div className="absolute inset-0 w-12 h-12 border-2 border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
-                  </div>
-                  <p className="text-xs text-emerald-500/80 uppercase tracking-[0.3em] animate-pulse font-bold">
-                    Analyzing Data Stream...
-                  </p>
-                </div>
+                <ResultSkeleton />
               ) : error ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -164,9 +158,11 @@ export default function DashboardClient() {
                   <span className="opacity-70">{error}</span>
                 </motion.div>
               ) : (
-                <div className="bg-zinc-900/40 rounded-2xl border border-white/10 px-8 backdrop-blur-xl shadow-2xl">
-                  <ResultDisplay action={activeAction} data={result} />
-                </div>
+                <ErrorBoundary fallbackAction={handleReturn}>
+                  <div className="bg-zinc-900/40 rounded-2xl border border-white/10 px-8 backdrop-blur-xl shadow-2xl">
+                    <ResultDisplay action={activeAction} data={result} />
+                  </div>
+                </ErrorBoundary>
               )}
 
               <div className="flex items-center justify-between py-4 border-b border-white/5">

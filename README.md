@@ -1,168 +1,101 @@
 
 # DEV DNA
 
-This project is a GitHub profile analysis engine that converts raw GitHub activity into meaningful engineering signals using LLMs.
+Analyzes your GitHub profile the way a senior engineer would — not stars and streaks, but patterns, depth, and signals.
 
-Instead of showing vanity metrics like stars or repo count, the system analyzes patterns in repositories and activity to produce human-level evaluations, actionable suggestions, and honest feedback — similar to how experienced engineers subconsciously judge GitHub profiles.
-
-> **The goal is not motivation or praise, but clarity.**
+Sign in with GitHub → get structured, LLM-powered evaluations grounded in your actual repos, commits, and activity.
 
 ---
 
-## What This Project Does
+## Actions
 
-The system takes a user's GitHub account and:
+| Action | What it does |
+|--------|-------------|
+| **Analyze** | Evaluates your profile — skill level, strengths, blind spots, developer type |
+| **Suggest** | High-leverage suggestions tied to what's visible (or missing) on your GitHub |
+| **Improve** | Calls out missing engineering practices and structural weaknesses |
+| **Judge** | Judges your recent commit history — discipline, intent, and quality |
+| **Roast** | Brutally honest reality check with analogies. Stings because it's accurate |
 
-- **Fetches real GitHub data** using OAuth, GitHub REST API, and secure authentication
-- **Normalizes noisy API responses** into a clean, signal-focused profile
-- **Generates grounded prompts** based on that data
-- **Uses an LLM** to produce structured, JSON-only evaluations
-- **Returns results** that can directly power UI, dashboards, or further logic
-
-The output is deterministic, parseable, and grounded strictly in visible GitHub behavior.
-
----
-
-## Core Philosophy
-
-> GitHub is not a resume. It is a signal surface.
-
-This project is built around the idea that:
-
-- **Consistency** matters more than volume
-- **Depth** matters more than frameworks
-- **Signals** matter more than intentions
-- **Public repos** reflect how others perceive you, not how you see yourself
-
-All analysis is based only on what is actually visible on GitHub.
+Every action returns strict JSON — no markdown, no fluff, directly parseable.
 
 ---
 
-## High-Level Flow
+## How It Works
 
-1. User authenticates with GitHub via OAuth
-2. The backend fetches public GitHub data
-3. Raw data is normalized into a compact, structured profile
-4. A prompt is dynamically built based on the requested action
-5. The LLM is called with strict output rules
-6. The response is validated and returned as structured JSON
+```
+GitHub OAuth → Fetch live data (repos, commits, events)
+            → Normalize into compact profile
+            → Build action-specific prompt
+            → LLM generates structured JSON
+            → Cache response in Redis (1hr TTL)
+```
 
-*At no point does the system rely on stored profiles or hidden state.*
-
----
-
-## Supported Actions
-
-The system supports multiple analysis modes, each returning a strict JSON shape.
-
-### **Analyze**
-Evaluates the GitHub profile the way a strong engineer or hiring manager would. Focuses on patterns, consistency, depth, and real-world perception.
-
-### **Suggest**
-Provides high-leverage, profile-specific suggestions that improve perception and credibility rather than generic learning advice.
-
-### **Improve**
-Highlights missing engineering practices, structural weaknesses, and habits that prevent the profile from being taken seriously.
-
-### **Roast**
-A brutally honest reality check using intelligent humor and analogies. Still grounded entirely in real GitHub signals.
-
-Each action has its own schema and rules, making the output safe to consume programmatically.
+No stored profiles. Every request fetches live GitHub data, so insights stay fresh.
 
 ---
 
-## Tech Stack
+## Stack
 
-- **Next.js** App Router
-- **NextAuth** for GitHub OAuth
-- **GitHub REST API**
-- **Groq LLM API**
+- **Next.js** (App Router)
+- **NextAuth** — GitHub OAuth
+- **GitHub REST API** — repos, commits, events
+- **Groq** — LLM inference
+- **Redis (Upstash)** — response caching
+- **Framer Motion** — animations
+- **Recharts** — data visualization
 - **TypeScript**
-- **Stateless backend design**
-
-*No database is required for core functionality.*
 
 ---
 
-## Key Implementation Details
+## Setup
 
-### GitHub Data Normalization
+```bash
+git clone https://github.com/ritik-2407/dev-dna.git
+cd dev-dna
+npm install
+```
 
-Raw GitHub API responses are noisy and not LLM-friendly. This project reshapes them into a compact profile containing:
+Create a `.env` file:
 
-- Account metadata
-- Repository statistics and patterns
-- Language usage distribution
-- Recent activity signals
+```env
+GITHUB_ID=your_github_oauth_app_id
+GITHUB_SECRET=your_github_oauth_app_secret
+NEXTAUTH_SECRET=any_random_string
+NEXTAUTH_URL=http://localhost:3000
+GROQ_API_KEY=your_groq_api_key
+REDIS_URL=rediss://default:your_password@your_endpoint.upstash.io:6379
+```
 
-Only information that contributes to perception is kept.
-
-### Prompt Discipline
-
-Every prompt follows strict rules:
-
-- JSON-only output
-- No markdown
-- No explanations outside JSON
-- Direct second-person language
-- Grounded strictly in provided data
-
-This ensures reliability, parse safety, and consistent UX.
-
-### Stateless Design
-
-The system does not cache or store profiles by default. Every request:
-
-1. Authenticates
-2. Fetches live GitHub data
-3. Normalizes it
-4. Runs analysis
-
-This guarantees freshness and avoids stale insights.
+```bash
+npm run dev
+```
 
 ---
 
-## Why This Project Exists
+## Project Structure
 
-Most GitHub analyzers focus on surface metrics. Most AI feedback tools are generic and motivational.
-
-This project sits in between:
-
-✓ Grounded in real data  
-✓ Honest without being random  
-✓ Useful without being vague  
-✓ Opinionated without hallucinating  
-
-It is built to mirror how experienced engineers actually think.
-
----
-
-## Intended Use Cases
-
-- Developers auditing their own GitHub presence
-- Career tooling and portfolio platforms
-- Internal evaluation or mentoring tools
-- Experimenting with structured LLM outputs
-- Learning how to integrate AI into real products, not demos
+```
+app/
+├── api/
+│   ├── ai/action/    # Core analysis endpoint
+│   ├── auth/          # NextAuth GitHub OAuth
+│   ├── github/        # GitHub data proxy
+│   └── logout/
+├── dashboard/         # Analysis UI + result sections
+├── lib/
+│   ├── githubFetch.ts       # Authenticated GitHub API calls
+│   ├── normalizeGitHubData.ts  # Raw API → clean profile
+│   ├── promptGenerator.ts   # Action-specific prompt builder
+│   ├── llm.ts               # Groq API wrapper
+│   ├── llmCache.ts          # Redis caching layer
+│   └── redis.ts             # Redis client (singleton)
+├── components/        # Shared UI components
+└── LandingPage.tsx    # Landing page
+```
 
 ---
 
-## Current Limitations
+## License
 
-- Analysis is limited to public GitHub data
-- Private repositories are not considered
-- LLM output quality depends on profile signal strength
-- No long-term memory or historical tracking yet
-
-*These are intentional tradeoffs for clarity and trust.*
-
----
-
-## Future Direction
-
-- Schema validation for LLM responses
-- Confidence scoring for signals
-- Time-series GitHub analysis
-- UI dashboard layer
-- Comparative analysis across profiles
-
+MIT
