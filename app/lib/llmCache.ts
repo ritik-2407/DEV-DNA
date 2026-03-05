@@ -1,29 +1,14 @@
-type CacheEntry = {
-    data : any,
-    timestamp: number
+import redisClient from "./redis"
+
+const CACHE_TTL = 3600 // 1 hour in seconds (Redis uses seconds, not milliseconds)
+
+export async function getCachedLLM(key: string) {
+  const cached = await redisClient.get(key)
+  if (!cached) return null
+
+  return JSON.parse(cached)
 }
 
-const CACHE_TTL = 1000 * 60 * 60 //1 hour
-
-const llmCache = new Map<string, CacheEntry>()
-
-export function getCachedLLM(key: string){
-    const entry = llmCache.get(key)
-    if (!entry) return null
-
-    const expired = Date.now() - entry.timestamp > CACHE_TTL
-
-    if(expired){
-        llmCache.delete(key)
-        return null
-    }
-
-    return entry.data
-}
-
-export function setCachedLLM(key: string, data: any) {
-  llmCache.set(key, {
-    data,
-    timestamp: Date.now(),
-  })
+export async function setCachedLLM(key: string, data: any) {
+  await redisClient.set(key, JSON.stringify(data), { EX: CACHE_TTL })
 }

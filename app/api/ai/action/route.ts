@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     const cacheKey = `${githubUsername}::${action}`;
 
-    const cached = getCachedLLM(cacheKey);
+    const cached = await getCachedLLM(cacheKey);
 
     if (cached) {
       return Response.json({
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
     let parsed;
     try {
       parsed = JSON.parse(raw);
-      setCachedLLM(cacheKey, parsed);
+      await setCachedLLM(cacheKey, parsed);
     } catch {
       return Response.json(
         {
