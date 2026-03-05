@@ -96,6 +96,8 @@ app/
 
 ---
 
-## License
+##Future Updates
 
-MIT
+- Profile Comparison of two users
+- Repository Analysis
+
