@@ -133,29 +133,27 @@ export default function LandingPage() {
               <motion.div
                 variants={fadeUp}
                 custom={3}
-                className="flex flex-wrap items-center gap-4 pt-2"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 w-full max-w-sm sm:max-w-none"
               >
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleGo()}
-                      placeholder="Enter GitHub username"
-                      className="px-5 py-4 text-sm font-mono bg-zinc-900/80 border border-white/10 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-64 transition-all duration-300 focus:shadow-[0_0_20px_rgba(5,150,105,0.15)]"
-                    />
-                  </div>
-                  <button
-                    onClick={handleGo}
-                    className="cursor-pointer group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-[0_8px_32px_rgba(5,150,105,0.25)] hover:shadow-[0_12px_40px_rgba(5,150,105,0.35)]"
-                  >
-                    <span className="flex items-center gap-2">
-                      Analyze
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                    </span>
-                  </button>
+                <div className="relative w-full sm:w-auto">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleGo()}
+                    placeholder="Enter GitHub username"
+                    className="px-5 py-4 text-sm font-mono bg-zinc-900/80 border border-white/10 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-full sm:w-64 transition-all duration-300 focus:shadow-[0_0_20px_rgba(5,150,105,0.15)]"
+                  />
                 </div>
+                <button
+                  onClick={handleGo}
+                  className="cursor-pointer group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-[0_8px_32px_rgba(5,150,105,0.25)] hover:shadow-[0_12px_40px_rgba(5,150,105,0.35)] w-full sm:w-auto flex justify-center items-center"
+                >
+                  <span className="flex items-center gap-2">
+                    Analyze
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </button>
               </motion.div>
             </div>
 
@@ -444,18 +442,18 @@ export default function LandingPage() {
                   10 seconds to connect. No signup forms. No credit card. Just
                   your GitHub and honest feedback.
                 </motion.p>
-                <motion.div variants={fadeUp} custom={2} className="flex items-center gap-3">
+                <motion.div variants={fadeUp} custom={2} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-sm sm:max-w-none">
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleGo()}
                     placeholder="GitHub username"
-                    className="px-5 py-4 text-sm font-mono bg-black/50 border border-white/10 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-56 transition-all duration-300"
+                    className="px-5 py-4 text-sm font-mono bg-black/50 border border-white/10 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-full sm:w-56 transition-all duration-300"
                   />
                   <button
                     onClick={handleGo}
-                    className="cursor-pointer group flex items-center gap-3 px-8 py-4 bg-white text-black text-sm font-bold rounded-lg hover:bg-emerald-400 transition-all duration-300"
+                    className="cursor-pointer group flex items-center justify-center gap-3 px-8 py-4 bg-white text-black text-sm font-bold rounded-lg hover:bg-emerald-400 transition-all duration-300 w-full sm:w-auto"
                   >
                     Analyze
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
