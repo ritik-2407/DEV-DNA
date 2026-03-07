@@ -1,9 +1,9 @@
 
 # DEV DNA
 
-Analyzes your GitHub profile the way a senior engineer would — not stars and streaks, but patterns, depth, and signals.
+Analyzes any GitHub profile the way a senior engineer would — not stars and streaks, but patterns, depth, and signals.
 
-Sign in with GitHub → get structured, LLM-powered evaluations grounded in your actual repos, commits, and activity.
+Enter a GitHub username → get structured, LLM-powered evaluations grounded in their actual repos, commits, and activity.
 
 ---
 
@@ -24,21 +24,21 @@ Every action returns strict JSON — no markdown, no fluff, directly parseable.
 ## How It Works
 
 ```
-GitHub OAuth → Fetch live data (repos, commits, events)
-            → Normalize into compact profile
-            → Build action-specific prompt
-            → LLM generates structured JSON
-            → Cache response in Redis (1hr TTL)
+Enter Username → Fetch live data via server PAT (repos, commits, events)
+               → Normalize into compact profile
+               → Build action-specific prompt
+               → LLM generates structured JSON
+               → Cache response in Redis (1hr TTL)
 ```
 
-No stored profiles. Every request fetches live GitHub data, so insights stay fresh.
+No sign-in required. Every request fetches live GitHub data, so insights stay fresh.
 
 ---
 
 ## Stack
 
 - **Next.js** (App Router)
-- **NextAuth** — GitHub OAuth
+- **Server-side PAT** — secure API access without rate limits
 - **GitHub REST API** — repos, commits, events
 - **Groq** — LLM inference
 - **Redis (Upstash)** — response caching
@@ -59,10 +59,7 @@ npm install
 Create a `.env` file:
 
 ```env
-GITHUB_ID=your_github_oauth_app_id
-GITHUB_SECRET=your_github_oauth_app_secret
-NEXTAUTH_SECRET=any_random_string
-NEXTAUTH_URL=http://localhost:3000
+GITHUB_TOKEN=your_github_personal_access_token
 GROQ_API_KEY=your_groq_api_key
 REDIS_URL=rediss://default:your_password@your_endpoint.upstash.io:6379
 ```
@@ -78,10 +75,8 @@ npm run dev
 ```
 app/
 ├── api/
-│   ├── ai/action/    # Core analysis endpoint
-│   ├── auth/          # NextAuth GitHub OAuth
-│   ├── github/        # GitHub data proxy
-│   └── logout/
+│   ├── ai/action/     # Core analysis endpoint
+│   └── github/profile/ # GitHub data endpoint
 ├── dashboard/         # Analysis UI + result sections
 ├── lib/
 │   ├── githubFetch.ts       # Authenticated GitHub API calls
@@ -98,6 +93,8 @@ app/
 
 ##Future Updates
 
+- 
 - Profile Comparison of two users
 - Repository Analysis
+- Multiple platforms Analysis (LeetCode, HackerRank, etc.)
 

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Globe,
   Shield,
+  Bug,
 } from "lucide-react";
 
 // ─── Animations ────────────────────────────────────────────────────────────────
@@ -81,23 +82,15 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleGo()}
-              placeholder="GitHub username"
-              className="px-3 py-1.5 text-xs font-mono bg-zinc-900 border border-white/10 rounded-md text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-36 transition-colors"
-            />
-            <button
-              onClick={handleGo}
-              className="cursor-pointer flex items-center gap-2 px-4 py-1.5 text-xs font-semibold bg-white text-black hover:bg-emerald-400 transition-all duration-300 rounded-md"
-            >
-              Go
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
+          <a
+            href="https://x.com/ritik_247"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold text-zinc-400 hover:text-emerald-400 border border-white/10 hover:border-emerald-500/30 bg-zinc-900/60 rounded-md transition-all duration-300"
+          >
+            <Bug className="w-3.5 h-3.5" />
+            Found a bug?
+          </a>
         </div>
       </nav>
 

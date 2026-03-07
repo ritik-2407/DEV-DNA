@@ -10,9 +10,9 @@ interface ActionResponse {
   skillLevel?: string;
   developerType?: string;
   currentReality?: string;
-  whatYouAreDoingWell?: string[];
-  whatIsHoldingYouBack?: string[];
-  yourPotentialIfYouAct?: string;
+  strengths?: string[];
+  weaknesses?: string[];
+  potential?: string;
   
   // Suggest fields
   focusSkills?: string[];
@@ -28,14 +28,14 @@ interface ActionResponse {
   //judge fields
   verdict?: string;
   commitDiscipline?: string;
-  whatYourCommitsReveal?: string;
+  commitsReveal?: string;
   redFlags?: string[];
-  whatYouShouldFixImmediately?: string[];
+  immediateFixes?: string[];
   judgeClosingRemark?: string;
   
   // Roast fields
   hardTruths?: string[];
-  badSignalsYouAreSending?: string[];
+  badSignals?: string[];
   wakeUpCall?: string;
   
   [key: string]: any;
@@ -166,18 +166,18 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
 
           {/* Strengths & Weaknesses Grid */}
           <div className="grid md:grid-cols-2 gap-12">
-            {data.whatYouAreDoingWell && data.whatYouAreDoingWell.length > 0 && (
+            {data.strengths && data.strengths.length > 0 && (
               <InfoSection 
-                title="What You're Doing Well" 
-                items={data.whatYouAreDoingWell}
+                title="Strengths" 
+                items={data.strengths}
                 icon={Shield}
                 variant="positive"
               />
             )}
-            {data.whatIsHoldingYouBack && data.whatIsHoldingYouBack.length > 0 && (
+            {data.weaknesses && data.weaknesses.length > 0 && (
               <InfoSection 
-                title="What's Holding You Back" 
-                items={data.whatIsHoldingYouBack}
+                title="Weaknesses" 
+                items={data.weaknesses}
                 icon={AlertCircle}
                 variant="negative"
               />
@@ -185,13 +185,13 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           </div>
 
           {/* Potential */}
-          {data.yourPotentialIfYouAct && (
+          {data.potential && (
             <div className="pt-12 border-t border-zinc-800 mb-12">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-6">
-                Your Potential
+                Potential
               </h4>
               <p className="text-xl text-zinc-200 font-light leading-relaxed">
-                {data.yourPotentialIfYouAct}
+                {data.potential}
               </p>
             </div>
           )}
@@ -331,14 +331,14 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           <div className="grid md:grid-cols-2 gap-6">
             {data.commitDiscipline && (
               <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-lg space-y-3">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Commit Discipline</span>
-                <p className="text-zinc-300 leading-relaxed">{data.commitDiscipline}</p>
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest ">Commit Discipline</span>
+                <p className="text-zinc-300 leading-relaxed mt-4">{data.commitDiscipline}</p>
               </div>
             )}
-            {data.whatYourCommitsReveal && (
+            {data.commitsReveal && (
               <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-lg space-y-3">
                 <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Code DNA</span>
-                <p className="text-zinc-300 leading-relaxed">{data.whatYourCommitsReveal}</p>
+                <p className="text-zinc-300 leading-relaxed mt-4">{data.commitsReveal}</p>
               </div>
             )}
           </div>
@@ -353,10 +353,10 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
                 variant="negative"
               />
             )}
-            {data.whatYouShouldFixImmediately && data.whatYouShouldFixImmediately.length > 0 && (
+            {data.immediateFixes && data.immediateFixes.length > 0 && (
               <InfoSection 
                 title="Immediate Fixes" 
-                items={data.whatYouShouldFixImmediately}
+                items={data.immediateFixes}
                 icon={CheckCircle}
                 variant="warning"
               />
@@ -397,10 +397,10 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           )}
 
           {/* Bad Signals */}
-          {data.badSignalsYouAreSending && data.badSignalsYouAreSending.length > 0 && (
+          {data.badSignals && data.badSignals.length > 0 && (
             <InfoSection 
-              title="Signals You're Sending" 
-              items={data.badSignalsYouAreSending}
+              title="Bad Signals" 
+              items={data.badSignals}
               icon={AlertCircle}
               variant="negative"
             />

@@ -6,8 +6,7 @@ You MUST follow these rules strictly:
 - No explanations outside JSON
 - No extra text
 - Output must be directly JSON.parse()-able
-- Speak directly to the user using "you" and "your"
-- Do NOT refer to the user in third person
+- Refer to the person in third person like "this dev", "this developer", "this guy", "this girl" — NEVER use "you" or "your"
 - Be specific: every point must be grounded in the given GitHub data
 - Avoid shallow or generic observations
 `;
@@ -17,9 +16,9 @@ You MUST follow these rules strictly:
 
  case "analyze":
   return `
-You are a senior software engineer evaluating your GitHub profile the way a strong engineer or hiring manager subconsciously would.
+You are a senior software engineer evaluating a developer's GitHub profile the way a strong engineer or hiring manager subconsciously would.
 
-You are speaking TO the user.
+You are NOT speaking to the user. You are giving a third-person assessment of this developer.
 This is not a summary — this is an evaluation.
 
 Your job:
@@ -31,16 +30,16 @@ Return JSON in EXACTLY this format:
 {
   "skillLevel": "beginner | intermediate | advanced",
   "currentReality": string,
-  "whatYouAreDoingWell": string[],
-  "whatIsHoldingYouBack": string[],
-  "yourPotentialIfYouAct": string,
+  "strengths": string[],
+  "weaknesses": string[],
+  "potential": string,
   "developerType": string
 }
 
 Guidelines:
 - Be honest and analytical, not motivational
 - If activity is inconsistent or shallow, say it clearly
-- Explain what your GitHub signals to experienced engineers
+- Explain what this developer's GitHub signals to experienced engineers
 - Avoid buzzwords and recruiter language
 - This should feel like a serious mirror, not encouragement
 
@@ -52,7 +51,7 @@ ${JSON.stringify(profile, null, 2)}
 
 case "suggest":
   return `
-You are a senior software engineer mentoring YOU based strictly on your GitHub activity.
+You are a senior software engineer giving third-person mentoring advice based strictly on a developer's GitHub activity.
 
 Your job:
 - Identify leverage points
@@ -72,6 +71,7 @@ Guidelines:
 - Prefer fewer, higher-impact suggestions
 - Explain implicitly WHY each suggestion matters through specificity
 - Avoid generic advice like "build more projects"
+- Refer to the developer in third person
 
 ${baseRules}
 
@@ -83,7 +83,7 @@ ${JSON.stringify(profile, null, 2)}
     
    case "improve":
   return `
-You are a senior engineer reviewing YOUR engineering habits through your repositories.
+You are a senior engineer reviewing a developer's engineering habits through their repositories.
 
 Assume the goal:
 - To be taken seriously as an engineer
@@ -101,6 +101,7 @@ Guidelines:
 - Call out missing discipline (testing, structure, ownership, depth)
 - Tie every suggestion to long-term credibility
 - Be direct and slightly uncomfortable if needed
+- Refer to the developer in third person
 
 ${baseRules}
 
@@ -116,7 +117,7 @@ ${baseRules}
 You are an experienced software engineer whose job is to judge a developer
 based ONLY on their most recent commit history.
 
-You are speaking directly to the developer.
+You are giving a third-person verdict on this developer.
 Do NOT soften the feedback.
 Do NOT motivate.
 Do NOT generalize.
@@ -132,9 +133,9 @@ Return ONLY valid JSON in EXACTLY this format:
 {
   "verdict": "positive | neutral | negative",
   "commitDiscipline": string,
-  "whatYourCommitsReveal": string,
+  "commitsReveal": string,
   "redFlags": string[],
-  "whatYouShouldFixImmediately": string[],
+  "immediateFixes": string[],
   "judgeClosingRemark": string
 }
 
@@ -152,24 +153,26 @@ ${JSON.stringify(profile.recentCommits, null, 2)}
 
   case "roast":
   return `
-You are a brutally honest senior software engineer giving YOU a reality check.
+You are a brutally honest senior software engineer giving a developer a reality check.
 
 This is tough love with intelligence.
 Humor is allowed — stupidity is not.
+You are roasting this dev in third person.
 
 Return JSON in EXACTLY this format:
 {
   "hardTruths": string[],
-  "badSignalsYouAreSending": string[],
+  "badSignals": string[],
   "wakeUpCall": string
 }
 
 Guidelines:
 
-- Use analogies to compare and roast the user 
+- Use analogies to compare and roast the developer
 - Roast habits, patterns, and signals and be savage with it
 - Be funny, and do not sound like a robot
-- This should sting a little because it’s accurate
+- This should sting a little because it's accurate
+- Refer to the developer in third person — NEVER use "you" or "your"
 
 ${baseRules}
 
