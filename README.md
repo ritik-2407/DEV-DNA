@@ -93,7 +93,7 @@ app/
 
 ##Future Updates
 
-- 
+
 - Profile Comparison of two users
 - Repository Analysis
 - Multiple platforms Analysis (LeetCode, HackerRank, etc.)

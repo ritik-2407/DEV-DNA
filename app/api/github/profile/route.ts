@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { rateLimit } from "@/app/lib/rateLimit";
+import { headers } from "next/headers";
 
 const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
 
@@ -43,6 +45,34 @@ query ($login: String!) {
 
 export async function GET(req: Request) {
   try {
+    // ── Rate limiting ──────────────────────────────────────────────────────────
+    const headersList = await headers();
+    const ip =
+      headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+      headersList.get("x-real-ip") ??
+      "unknown";
+
+    const limit = await rateLimit(ip, "github-profile", {
+      limit: 20,      // 20 requests …
+      windowSec: 60,  // … per 60 seconds
+    });
+
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: `Rate limit exceeded. Try again in ${limit.resetIn}s.` },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": "20",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(limit.resetIn),
+            "Retry-After": String(limit.resetIn),
+          },
+        }
+      );
+    }
+    // ──────────────────────────────────────────────────────────────────────────
+
     const { searchParams } = new URL(req.url);
     const githubUsername = searchParams.get("username");
 

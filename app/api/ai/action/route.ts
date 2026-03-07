@@ -3,9 +3,44 @@ import { normaliseGitHubData } from "@/app/lib/normalizeGitHubData";
 import { buildPrompt } from "@/app/lib/promptGenerator";
 import { runLLM } from "@/app/lib/llm";
 import { getCachedLLM, setCachedLLM } from "@/app/lib/llmCache";
+import { rateLimit } from "@/app/lib/rateLimit";
+import { headers } from "next/headers";
 
 export async function POST(req: Request) {
   try {
+    // ── Rate limiting ──────────────────────────────────────────────────────────
+    // We identify the caller by their IP address (Next.js forwards it via
+    // the `x-forwarded-for` header when behind a proxy/CDN like Vercel).
+    const headersList = await headers();
+    const ip =
+      headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+      headersList.get("x-real-ip") ??
+      "unknown";
+
+    const limit = await rateLimit(ip, "ai-action", {
+      limit: 5,       // 5 requests …
+      windowSec: 60,  // … per 60 seconds
+    });
+
+    if (!limit.allowed) {
+      return Response.json(
+        {
+          success: false,
+          error: `Rate limit exceeded. Try again in ${limit.resetIn}s.`,
+        },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": "5",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(limit.resetIn),
+            "Retry-After": String(limit.resetIn),
+          },
+        }
+      );
+    }
+    // ──────────────────────────────────────────────────────────────────────────
+
     // Read username + action from body
     const { action, username } = await req.json();
     const githubUsername = username;
