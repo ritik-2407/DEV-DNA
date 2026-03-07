@@ -1,6 +1,7 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import {
@@ -38,6 +39,16 @@ const stagger: Variants = {
 // ─── Landing Page ──────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
+  const [username, setUsername] = useState("");
+  const router = useRouter();
+
+  function handleGo() {
+    const trimmed = username.trim();
+    if (trimmed) {
+      router.push(`/dashboard?username=${encodeURIComponent(trimmed)}`);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#030303] text-zinc-400 font-sans selection:bg-emerald-500/30 antialiased overflow-x-hidden cursor-default">
       {/* ── Ambient Background ── */}
@@ -70,17 +81,21 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-              
-            
-            </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleGo()}
+              placeholder="GitHub username"
+              className="px-3 py-1.5 text-xs font-mono bg-zinc-900 border border-white/10 rounded-md text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-36 transition-colors"
+            />
             <button
-              onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-              className="cursor-pointer flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-white text-black hover:bg-emerald-400 transition-all duration-300 rounded-md"
+              onClick={handleGo}
+              className="cursor-pointer flex items-center gap-2 px-4 py-1.5 text-xs font-semibold bg-white text-black hover:bg-emerald-400 transition-all duration-300 rounded-md"
             >
-              <Github className="w-3.5 h-3.5" />
-              Sign In
+              Go
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
         </div>
@@ -127,21 +142,27 @@ export default function LandingPage() {
                 custom={3}
                 className="flex flex-wrap items-center gap-4 pt-2"
               >
-                <button
-                  onClick={() =>
-                    signIn("github", { callbackUrl: "/dashboard" })
-                  }
-                  className="cursor-pointer group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-[0_8px_32px_rgba(5,150,105,0.25)] hover:shadow-[0_12px_40px_rgba(5,150,105,0.35)]"
-                >
-                  <span className="flex items-center gap-2">
-                    Start Analysis
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </button>
-
-                <span className="text-[11px] text-zinc-600 font-mono">
-                  
-                </span>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleGo()}
+                      placeholder="Enter GitHub username"
+                      className="px-5 py-4 text-sm font-mono bg-zinc-900/80 border border-white/10 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-64 transition-all duration-300 focus:shadow-[0_0_20px_rgba(5,150,105,0.15)]"
+                    />
+                  </div>
+                  <button
+                    onClick={handleGo}
+                    className="cursor-pointer group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-[0_8px_32px_rgba(5,150,105,0.25)] hover:shadow-[0_12px_40px_rgba(5,150,105,0.35)]"
+                  >
+                    <span className="flex items-center gap-2">
+                      Analyze
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </button>
+                </div>
               </motion.div>
             </div>
 
@@ -356,9 +377,9 @@ export default function LandingPage() {
                 {[
                   {
                     step: "01",
-                    title: "Connect GitHub",
-                    desc: "One-click OAuth. We only read public data — repos, commits, events. Nothing is stored.",
-                    icon: Github,
+                    title: "Enter Username",
+                    desc: "Just type any GitHub username. No sign-in, no OAuth, no permissions. We only read public data.",
+                    icon: Terminal,
                   },
                   {
                     step: "02",
@@ -430,15 +451,20 @@ export default function LandingPage() {
                   10 seconds to connect. No signup forms. No credit card. Just
                   your GitHub and honest feedback.
                 </motion.p>
-                <motion.div variants={fadeUp} custom={2}>
+                <motion.div variants={fadeUp} custom={2} className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleGo()}
+                    placeholder="GitHub username"
+                    className="px-5 py-4 text-sm font-mono bg-black/50 border border-white/10 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 w-56 transition-all duration-300"
+                  />
                   <button
-                    onClick={() =>
-                      signIn("github", { callbackUrl: "/dashboard" })
-                    }
+                    onClick={handleGo}
                     className="cursor-pointer group flex items-center gap-3 px-8 py-4 bg-white text-black text-sm font-bold rounded-lg hover:bg-emerald-400 transition-all duration-300"
                   >
-                    <Github className="w-4 h-4" />
-                    Analyze My Profile
+                    Analyze
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </button>
                 </motion.div>

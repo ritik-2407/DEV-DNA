@@ -7,14 +7,14 @@ import TopLanguages from "../components/TopLanguages";
 import StatsRow from "../components/StatsRow";
 import CommitActivity from "../components/CommitActivity";
 
-export default function StatsSection() {
+export default function StatsSection({ username }: { username: string }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch("/api/github/profile");
+        const res = await fetch(`/api/github/profile?username=${encodeURIComponent(username)}`);
         if (res.ok) setData(await res.json());
       } catch (err) {
         console.error("Failed to fetch stats", err);

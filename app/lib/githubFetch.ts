@@ -1,9 +1,9 @@
 const GITHUB_BASE = "https://api.github.com";
 
-export async function githubFetch(url: string, token: string) {
+export async function githubFetch(url: string) {
   const res = await fetch(`${GITHUB_BASE}${url}`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${process.env.GITHUB_PAT}`,
       Accept: "application/vnd.github+json",
     },
   });

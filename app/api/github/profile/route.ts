@@ -1,4 +1,3 @@
-import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
@@ -44,22 +43,20 @@ query ($login: String!) {
 
 export async function GET(req: Request) {
   try {
-    const token = await getToken({ req: req as any });
+    const { searchParams } = new URL(req.url);
+    const githubUsername = searchParams.get("username");
 
-    const githubAccessToken = token?.githubAccessToken as string;
-    const githubUsername = token?.githubUsername as string;
-
-    if (!githubAccessToken || !githubUsername) {
+    if (!githubUsername) {
       return NextResponse.json(
-        { error: "GitHub auth context missing" },
-        { status: 401 }
+        { error: "Username query parameter is required" },
+        { status: 400 }
       );
     }
 
     const res = await fetch(GITHUB_GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${githubAccessToken}`,
+        Authorization: `Bearer ${process.env.GITHUB_PAT}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

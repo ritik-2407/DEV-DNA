@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import ResultSkeleton from "../components/ResultSkeleton";
@@ -14,6 +13,7 @@ import ActionsSection from "./sections/ActionsSection";
 export default function DashboardClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const username = searchParams.get("username") || "";
   const activeAction = searchParams.get("action");
 
   const [activeTab, setActiveTab] = useState<"stats" | "actions">("stats");
@@ -28,7 +28,7 @@ export default function DashboardClient() {
       const res = await fetch("/api/ai/action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: actionKey }),
+        body: JSON.stringify({ action: actionKey, username }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Unknown error");
@@ -52,16 +52,15 @@ export default function DashboardClient() {
   }, [activeAction, result, loading, executeAction]);
 
   const runAction = (actionKey: string) => {
-    router.push(`?action=${actionKey}`);
+    router.push(`?username=${encodeURIComponent(username)}&action=${actionKey}`);
   };
 
   const handleReturn = () => {
-    router.push("/dashboard");
+    router.push(`/dashboard?username=${encodeURIComponent(username)}`);
   };
 
-  async function handleLogout() {
-    await fetch("/api/logout", { method: "POST" });
-    await signOut({ callbackUrl: "/" });
+  function handleSwitchUser() {
+    router.push("/");
   }
 
   return (
@@ -120,7 +119,7 @@ export default function DashboardClient() {
                     exit={{ opacity: 0, x: -16 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <StatsSection />
+                    <StatsSection username={username} />
                   </motion.div>
                 ) : (
                   <motion.div
@@ -132,7 +131,7 @@ export default function DashboardClient() {
                   >
                     <ActionsSection
                       onRunAction={runAction}
-                      onLogout={handleLogout}
+                      onSwitchUser={handleSwitchUser}
                     />
                   </motion.div>
                 )}

@@ -1,6 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
-import { getToken } from "next-auth/jwt";
 import { githubFetch } from "@/app/lib/githubFetch";
 import { normaliseGitHubData } from "@/app/lib/normalizeGitHubData";
 import { buildPrompt } from "@/app/lib/promptGenerator";
@@ -9,29 +6,17 @@ import { getCachedLLM, setCachedLLM } from "@/app/lib/llmCache";
 
 export async function POST(req: Request) {
   try {
-    // Auth check
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    // Read username + action from body
+    const { action, username } = await req.json();
+    const githubUsername = username;
+
+    if (!githubUsername) {
       return Response.json(
-        { success: false, error: "Unauthorized, please Log in again." },
-        { status: 401 }
+        { success: false, error: "Username is required" },
+        { status: 400 }
       );
     }
 
-    // Token
-    const token = await getToken({ req: req as any });
-    const githubAccessToken = token?.githubAccessToken as string;
-    const githubUsername = token?.githubUsername as string;
-
-    if (!githubAccessToken || !githubUsername) {
-      return Response.json(
-        { success: false, error: "GitHub context missing" },
-        { status: 401 }
-      );
-    }
-
-    // Action
-    const { action } = await req.json();
     if (!action) {
       return Response.json(
         { success: false, error: "Action required" },
@@ -52,15 +37,13 @@ export async function POST(req: Request) {
       });
     }
     console.log("further llm API hit");
-    //  Fetch GitHub data (stateless)
-    const user = await githubFetch("/user", githubAccessToken);
+    //  Fetch GitHub data (public endpoints)
+    const user = await githubFetch(`/users/${githubUsername}`);
     const repos = await githubFetch(
-      "/user/repos?per_page=100",
-      githubAccessToken
+      `/users/${githubUsername}/repos?per_page=100`
     );
     const events = await githubFetch(
-      `/users/${githubUsername}/events`,
-      githubAccessToken
+      `/users/${githubUsername}/events`
     );
 
     const recentRepos = repos
@@ -76,8 +59,7 @@ export async function POST(req: Request) {
     for (const repo of recentRepos) {
       try {
         const commits = await githubFetch(
-          `/repos/${repo.full_name}/commits?per_page=5`,
-          githubAccessToken
+          `/repos/${repo.full_name}/commits?per_page=5`
         );
 
         commits.forEach((c: any) => {

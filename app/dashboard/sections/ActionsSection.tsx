@@ -6,7 +6,7 @@ import {
   Lightbulb,
   ArrowLeft,
   Gavel,
-  LogOut,
+  ArrowRightLeft,
   BarChart,
   Flame
 } from "lucide-react";
@@ -61,12 +61,12 @@ const actions = [
 
 interface ActionsSectionProps {
   onRunAction: (key: string) => void;
-  onLogout: () => void;
+  onSwitchUser: () => void;
 }
 
 export default function ActionsSection({
   onRunAction,
-  onLogout,
+  onSwitchUser,
 }: ActionsSectionProps) {
   return (
     <div className="space-y-12 pt-2">
@@ -109,15 +109,15 @@ export default function ActionsSection({
         ))}
 
         <motion.button
-          onClick={onLogout}
+          onClick={onSwitchUser}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           className="cursor-pointer mt-8 mx-auto group flex items-center gap-3 px-5 py-2 rounded-full text-zinc-600 hover:text-zinc-300 transition-all duration-300"
         >
-          <LogOut className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+          <ArrowRightLeft className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
-            LOG OUT
+            SWITCH USER
           </span>
         </motion.button>
       </div>
