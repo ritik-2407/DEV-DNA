@@ -20,6 +20,7 @@ import {
   Globe,
   Shield,
   Bug,
+  EyeOff,
 } from "lucide-react";
 
 // ─── Animations ────────────────────────────────────────────────────────────────
@@ -83,10 +84,10 @@ export default function LandingPage() {
           </div>
 
           <a
-            href="https://x.com/ritik_247"
+            href="https://www.linkedin.com/in/ritik-yadav-06a8aa361/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold text-zinc-400 hover:text-emerald-400 border border-white/10 hover:border-emerald-500/30 bg-zinc-900/60 rounded-md transition-all duration-300"
+            className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold text-zinc-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 bg-zinc-900/60 rounded-md transition-all duration-300"
           >
             <Bug className="w-3.5 h-3.5" />
             Found a bug?
@@ -154,6 +155,18 @@ export default function LandingPage() {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </span>
                 </button>
+              </motion.div>
+
+              {/* ── Public-only constraint note ── */}
+              <motion.div
+                variants={fadeUp}
+                custom={3.5}
+                className="flex items-center gap-1.5"
+              >
+                <EyeOff className="w-3 h-3 text-zinc-600 flex-shrink-0" />
+                <span className="text-[11px] text-zinc-600 font-mono">
+                  Public repos only*
+                </span>
               </motion.div>
             </div>
 
@@ -369,7 +382,7 @@ export default function LandingPage() {
                   {
                     step: "01",
                     title: "Enter Username",
-                    desc: "Just type any GitHub username. No sign-in, no OAuth, no permissions. We only read public data.",
+                    desc: "Just type any GitHub username. No sign-in, no OAuth, no permissions required. We only read public data — private repositories are not included.",
                     icon: Terminal,
                   },
                   {

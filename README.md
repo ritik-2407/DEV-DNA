@@ -24,7 +24,7 @@ Every action returns strict JSON — no markdown, no fluff, directly parseable.
 ## How It Works
 
 ```
-Enter Username → Fetch live data via server PAT (repos, commits, events)
+Enter Username → Fetch live PUBLIC data via server PAT (repos, commits, events)
                → Normalize into compact profile
                → Build action-specific prompt
                → LLM generates structured JSON
@@ -32,6 +32,19 @@ Enter Username → Fetch live data via server PAT (repos, commits, events)
 ```
 
 No sign-in required. Every request fetches live GitHub data, so insights stay fresh.
+
+---
+
+## Constraints
+
+> **Public repositories only.**
+> DEV DNA uses a server-side GitHub Personal Access Token (PAT) to call the GitHub REST API on your behalf. This token only grants access to **publicly visible** data.
+>
+> - ✅ Public repos, commits, events, languages, stars
+> - ❌ Private repositories — not visible, not included in the analysis
+> - ❌ Organisation secrets or private gists
+
+This is by design: no authentication is required from the user, so the tool can only see what anyone on the internet can see on your GitHub profile. If your work lives primarily in private repos, the analysis will reflect only your public contributions.
 
 ---
 
@@ -91,7 +104,7 @@ app/
 
 ---
 
-##Future Updates
+## Future Updates
 
 
 - Profile Comparison of two users
