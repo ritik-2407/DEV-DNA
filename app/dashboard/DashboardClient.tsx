@@ -31,25 +31,26 @@ export default function DashboardClient() {
         body: JSON.stringify({ action: actionKey, username }),
       });
       const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Unknown error");
+      if (!res.ok || !json.success) throw new Error(json.error || `Server error: ${res.status}`);
       setResult(json.data);
     } catch (err: any) {
       setError(err?.message || "Action failed");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [username]);
 
   useEffect(() => {
     if (activeAction) {
-      if (!result && !loading) {
+       // Stop infinite loop if there's already an error.
+      if (!result && !loading && !error) {
         executeAction(activeAction);
       }
     } else {
       setResult(null);
       setError(null);
     }
-  }, [activeAction, result, loading, executeAction]);
+  }, [activeAction, result, loading, error, executeAction]);
 
   const runAction = (actionKey: string) => {
     router.push(`?username=${encodeURIComponent(username)}&action=${actionKey}`);

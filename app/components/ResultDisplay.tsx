@@ -446,8 +446,13 @@ export default function AIActionsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
+      
       const json = await res.json();
-      if (!json.success) throw new Error(json.error);
+      
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || `Server error: ${res.status}`);
+      }
+      
       setResult(json.data);
     } catch (err: any) {
       setError(err.message || "Request failed");

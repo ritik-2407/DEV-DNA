@@ -18,8 +18,8 @@ export async function POST(req: Request) {
       "unknown";
 
     const limit = await rateLimit(ip, "ai-action", {
-      limit: 5,       // 5 requests …
-      windowSec: 60,  // … per 60 seconds
+      limit: 5, // Increased to 20 for testing
+      windowSec: 60, // … per 60 seconds
     });
 
     if (!limit.allowed) {
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
             "X-RateLimit-Reset": String(limit.resetIn),
             "Retry-After": String(limit.resetIn),
           },
-        }
+        },
       );
     }
     // ──────────────────────────────────────────────────────────────────────────
@@ -48,14 +48,14 @@ export async function POST(req: Request) {
     if (!githubUsername) {
       return Response.json(
         { success: false, error: "Username is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!action) {
       return Response.json(
         { success: false, error: "Action required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -75,17 +75,15 @@ export async function POST(req: Request) {
     //  Fetch GitHub data (public endpoints)
     const user = await githubFetch(`/users/${githubUsername}`);
     const repos = await githubFetch(
-      `/users/${githubUsername}/repos?per_page=100`
+      `/users/${githubUsername}/repos?per_page=100`,
     );
-    const events = await githubFetch(
-      `/users/${githubUsername}/events`
-    );
+    const events = await githubFetch(`/users/${githubUsername}/events`);
 
     const recentRepos = repos
       .filter((r: any) => r.size > 0 && r.default_branch)
       .sort(
         (a: any, b: any) =>
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
       )
       .slice(0, 3);
 
@@ -94,7 +92,7 @@ export async function POST(req: Request) {
     for (const repo of recentRepos) {
       try {
         const commits = await githubFetch(
-          `/repos/${repo.full_name}/commits?per_page=5`
+          `/repos/${repo.full_name}/commits?per_page=5`,
         );
 
         commits.forEach((c: any) => {
@@ -114,7 +112,7 @@ export async function POST(req: Request) {
       user,
       repos,
       events,
-      recentCommits
+      recentCommits,
     );
 
     //  Prompt
@@ -124,11 +122,20 @@ export async function POST(req: Request) {
     let raw: string | null;
     try {
       raw = await runLLM(prompt);
-    } catch (err) {
+    } catch (err: any) {
       console.error("LLM failed:", err);
+      
+      // Check if it's a rate limit error from Groq (status 429 or message includes rate limit)
+      if (err?.status === 429 || err?.message?.toLowerCase().includes("rate limit") || err?.message?.toLowerCase().includes("too many requests")) {
+        return Response.json(
+          { success: false, error: "The free tier LLM rate limit has been reached. Please try again in a few minutes." },
+          { status: 429 },
+        );
+      }
+
       return Response.json(
-        { success: false, error: "LLM API failed" },
-        { status: 500 }
+        { success: false, error: "LLM API failed. Please try again." },
+        { status: 500 },
       );
     }
 
@@ -139,16 +146,24 @@ export async function POST(req: Request) {
     //  Parse JSON
     let parsed;
     try {
-      parsed = JSON.parse(raw);
+      // Strip markdown code block if present
+      const cleanRaw = raw
+        .trim()
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+        
+      parsed = JSON.parse(cleanRaw);
       await setCachedLLM(cacheKey, parsed);
     } catch {
       return Response.json(
         {
           success: false,
-          error: "Invalid JSON returned by LLM",
+          error: "Invalid JSON returned by LLM (Rate limit or unexpected output)",
           raw,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -162,7 +177,7 @@ export async function POST(req: Request) {
     console.error("AI ACTION CRASHED:", err);
     return Response.json(
       { success: false, error: err.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
