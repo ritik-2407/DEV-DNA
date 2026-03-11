@@ -8,11 +8,11 @@ import { Gavel , CheckCircle ,ArrowLeft, ChevronRight, Check, AlertCircle, Targe
 interface ActionResponse {
   // Analyze fields
   skillLevel?: string;
+  coreIdentity?: string;
   developerType?: string;
   currentReality?: string;
   strengths?: string[];
   weaknesses?: string[];
-  potential?: string;
   
   // Suggest fields
   focusSkills?: string[];
@@ -30,13 +30,13 @@ interface ActionResponse {
   commitDiscipline?: string;
   commitsReveal?: string;
   redFlags?: string[];
-  immediateFixes?: string[];
-  judgeClosingRemark?: string;
+  biggestOffenses?: string[];
+  finalRuling?: string;
   
   // Roast fields
-  hardTruths?: string[];
-  badSignals?: string[];
-  wakeUpCall?: string;
+  brutalCritique?: string[];
+  savageAnalogies?: string[];
+  roastClosing?: string;
   
   [key: string]: any;
 }
@@ -152,14 +152,27 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           transition={{ delay: 0.2 }}
           className="space-y-6"
         >
-          {/* Skill Level & Developer Type */}
-          <div className="mb-16">
-            {data.developerType && (
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-4">
-                Current Level
-              </h4>
+          {/* Skill Level & Core Identity */}
+          <div className="mb-16 space-y-6">
+            <div>
+              {data.developerType && (
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-4">
+                  Current Level
+                </h4>
+              )}
+              {data.skillLevel && <SkillLevelBadge level={data.skillLevel} />}
+            </div>
+            
+            {data.coreIdentity && (
+              <div>
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-2">
+                  Core Identity
+                </h4>
+                <p className="text-lg text-white font-medium">
+                  {data.coreIdentity}
+                </p>
+              </div>
             )}
-            {data.skillLevel && <SkillLevelBadge level={data.skillLevel} />}
           </div>
 
             
@@ -184,25 +197,13 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
             )}
           </div>
 
-          {/* Potential */}
-          {data.potential && (
-            <div className="pt-12 border-t border-zinc-800 mb-12">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-6">
-                Potential
-              </h4>
-              <p className="text-xl text-zinc-200 font-light leading-relaxed">
-                {data.potential}
-              </p>
-            </div>
-          )}
-
-          <h4 className="text-xl font-semibold uppercase tracking-widest text-zinc-300 mb-6">
-                Summary
+          <h4 className="text-xl font-semibold uppercase tracking-widest text-zinc-300 mb-3">
+                Current Reality
               </h4>
           {/* Current Reality */}
           {data.currentReality && (
             <div className="p-8 mt-1 bg-zinc-900/30 border border-zinc-800 rounded-lg">
-              <p className="text-zinc-300 text-lg font-light leading-relaxed">
+              <p className="text-zinc-300 text-md font-light leading-relaxed">
                 {data.currentReality}
               </p>
             </div>
@@ -353,20 +354,19 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
                 variant="negative"
               />
             )}
-            {data.immediateFixes && data.immediateFixes.length > 0 && (
+            {data.biggestOffenses && data.biggestOffenses.length > 0 && (
               <InfoSection 
-                title="Immediate Fixes" 
-                items={data.immediateFixes}
-                icon={CheckCircle}
-                variant="warning"
+                title="" 
+                items={data.biggestOffenses}
+                variant="negative"
               />
             )}
           </div>
 
           {/* Final Verdict Quote */}
-          {data.judgeClosingRemark && (
+          {data.finalRuling && (
             <div className="pt-8">
-              <QuoteBlock text={data.judgeClosingRemark} />
+              <QuoteBlock text={data.finalRuling} />
             </div>
           )}
         </motion.div>
@@ -381,38 +381,38 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
           transition={{ delay: 0.2 }}
           className="space-y-16"
         >
-          {/* Hard Truths */}
-          {data.hardTruths && data.hardTruths.length > 0 && (
+          {/* Brutal Critique */}
+          {data.brutalCritique && data.brutalCritique.length > 0 && (
             <div className="space-y-6">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-red-400/70 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4" />
-                Hard Truths
+                Brutal Critique
               </h4>
               <div className="grid gap-4">
-                {data.hardTruths.map((truth, i) => (
-                  <TruthCard key={i} text={truth} index={i} />
+                {data.brutalCritique.map((critique: string, i: number) => (
+                  <TruthCard key={i} text={critique} index={i} />
                 ))}
               </div>
             </div>
           )}
 
-          {/* Bad Signals */}
-          {data.badSignals && data.badSignals.length > 0 && (
+          {/* Savage Analogies */}
+          {data.savageAnalogies && data.savageAnalogies.length > 0 && (
             <InfoSection 
-              title="Bad Signals" 
-              items={data.badSignals}
-              icon={AlertCircle}
+              title="Analogies" 
+              items={data.savageAnalogies}
+              icon={Zap}
               variant="negative"
             />
           )}
 
-          {/* Wake Up Call */}
-          {data.wakeUpCall && (
+          {/* Final Burn */}
+          {data.roastClosing && (
             <div className="pt-8">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-8">
-                Wake-Up Call
+                Final Burn
               </h4>
-              <QuoteBlock text={data.wakeUpCall} />
+              <QuoteBlock text={data.roastClosing} />
             </div>
           )}
         </motion.div>
@@ -504,7 +504,7 @@ export default function AIActionsPage() {
               </button>
               
               {loading ? (
-                 <div className="flex flex-col items-center justify-center py-32 space-y-8">
+                 <div className="flex flex-col items-center justify-start pt-8 pb-32 md:justify-center md:pt-32 space-y-8">
                     <div className="w-16 h-16 border-2 border-zinc-800 border-t-white rounded-full animate-spin" />
                     <p className="text-sm text-zinc-500 font-light tracking-widest uppercase">Analyzing your profile</p>
                  </div>

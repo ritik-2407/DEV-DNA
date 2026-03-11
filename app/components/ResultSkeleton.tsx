@@ -22,6 +22,16 @@ export default function ResultSkeleton() {
       animate={{ opacity: 1 }}
       className="max-w-3xl mx-auto space-y-12 py-8"
     >
+      {/* Top loading indicator — visible at top on mobile/desktop */}
+      <div className="flex items-center justify-center gap-3 pb-4">
+        <div className="relative">
+          <div className="w-8 h-8 border border-zinc-800 rounded-full" />
+          <div className="absolute inset-0 w-8 h-8 border border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
+        </div>
+        <p className="text-[10px] text-emerald-500/60 uppercase tracking-[0.3em] font-bold">
+          Analyzing...
+        </p>
+      </div>
       {/* Header skeleton — matches the action title */}
       <div className="flex flex-col items-center space-y-4">
         <Pulse className="h-8 w-48 rounded-lg" />
@@ -72,16 +82,6 @@ export default function ResultSkeleton() {
         </div>
       </div>
 
-      {/* Subtle loading indicator at bottom */}
-      <div className="flex items-center justify-center gap-3 pt-4">
-        <div className="relative">
-          <div className="w-8 h-8 border border-zinc-800 rounded-full" />
-          <div className="absolute inset-0 w-8 h-8 border border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
-        </div>
-        <p className="text-[10px] text-emerald-500/60 uppercase tracking-[0.3em] font-bold">
-          Analyzing...
-        </p>
-      </div>
     </motion.div>
   );
 }
