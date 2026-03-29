@@ -114,7 +114,7 @@ export default function LandingPage() {
               >
                 Know what your
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-emerald-600">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-emerald-300 to-emerald-600">
                   GitHub says
                 </span>
                 <br />
@@ -163,7 +163,7 @@ export default function LandingPage() {
                 custom={3.5}
                 className="flex items-center gap-1.5"
               >
-                <EyeOff className="w-3 h-3 text-zinc-600 flex-shrink-0" />
+                <EyeOff className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span className="text-[11px] text-zinc-600 font-mono">
                   Public repos only*
                 </span>
@@ -178,11 +178,11 @@ export default function LandingPage() {
             >
               <div className="relative">
                 {/* Glow behind the terminal */}
-                <div className="absolute -inset-4 bg-emerald-500/[0.04] rounded-2xl blur-xl" />
+                <div className="absolute -inset-4 bg-emerald-500/4 rounded-2xl blur-xl" />
 
-                <div className="relative border border-white/[0.06] bg-[#0a0a0a] rounded-xl overflow-hidden shadow-2xl shadow-black/50">
+                <div className="relative border border-white/6 bg-[#0a0a0a] rounded-xl overflow-hidden shadow-2xl shadow-black/50">
                   {/* Title bar */}
-                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.04]">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/4">
                     <div className="flex gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
                       <span className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
