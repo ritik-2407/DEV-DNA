@@ -84,9 +84,7 @@ export default function LandingPage() {
           </div>
 
           <a
-            href="https://www.linkedin.com/in/ritik-yadav-06a8aa361/"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/troubleshooting"
             className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold text-zinc-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 bg-zinc-900/60 rounded-md transition-all duration-300"
           >
             <Bug className="w-3.5 h-3.5" />

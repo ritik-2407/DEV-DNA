@@ -53,7 +53,7 @@ export async function GET(req: Request) {
       "unknown";
 
     const limit = await rateLimit(ip, "github-profile", {
-      limit: 20,      // 20 requests …
+      limit: 10,      // 20 requests …
       windowSec: 60,  // … per 60 seconds
     });
 

@@ -18,12 +18,20 @@ export default function DashboardClient() {
 
   const [activeTab, setActiveTab] = useState<"stats" | "actions">("stats");
   const [loading, setLoading] = useState(false);
+  const [showTimeoutHint, setShowTimeoutHint] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const executeAction = useCallback(async (actionKey: string) => {
     setLoading(true);
     setError(null);
+    setShowTimeoutHint(false);
+    
+    // Warn user if request takes more than 5 seconds (usually means we hit a fallback Model)
+    const timeoutId = setTimeout(() => {
+      setShowTimeoutHint(true);
+    }, 5000);
+
     try {
       const res = await fetch("/api/ai/action", {
         method: "POST",
@@ -36,6 +44,7 @@ export default function DashboardClient() {
     } catch (err: any) {
       setError(err?.message || "Action failed");
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   }, [username]);
@@ -147,7 +156,7 @@ export default function DashboardClient() {
               className="space-y-6"
             >
               {loading ? (
-                <ResultSkeleton />
+                <ResultSkeleton showTimeoutHint={showTimeoutHint} />
               ) : error ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}

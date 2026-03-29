@@ -27,9 +27,11 @@ Every action returns strict JSON — no markdown, no fluff, directly parseable.
 Enter Username → Fetch live PUBLIC data via server PAT (repos, commits, events)
                → Normalize into compact profile
                → Build action-specific prompt
-               → LLM generates structured JSON
+               → LLM generates structured JSON (Groq with auto-fallback to OpenRouter)
                → Cache response in Redis (1hr TTL)
 ```
+
+**Resilient AI architecture:** DevDNA uses **Groq** for lightning-fast inference. If global API rate limits are temporarily hit, the system automatically initiates an exponential backoff cooldown state in Redis and seamlessly routes traffic through **OpenRouter** (Llama 3.3 70B) — ensuring analyzing never stops for the end user.
 
 No sign-in required. Every request fetches live GitHub data, so insights stay fresh.
 
@@ -53,8 +55,9 @@ This is by design: no authentication is required from the user, so the tool can 
 - **Next.js** (App Router)
 - **Server-side PAT** — secure API access without rate limits
 - **GitHub REST API** — repos, commits, events
-- **Groq** — LLM inference
-- **Redis (Upstash)** — response caching
+- **Groq** — Primary LLM inference
+- **OpenRouter** — Fallback LLM inference
+- **Redis (Upstash)** — response caching and fallback state tracking
 - **Framer Motion** — animations
 - **Recharts** — data visualization
 - **TypeScript**
@@ -73,7 +76,8 @@ Create a `.env` file:
 
 ```env
 GITHUB_TOKEN=your_github_personal_access_token
-GROQ_API_KEY=your_groq_api_key
+GROK_API_KEY=your_groq_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 REDIS_URL=rediss://default:your_password@your_endpoint.upstash.io:6379
 ```
 
@@ -95,7 +99,9 @@ app/
 │   ├── githubFetch.ts       # Authenticated GitHub API calls
 │   ├── normalizeGitHubData.ts  # Raw API → clean profile
 │   ├── promptGenerator.ts   # Action-specific prompt builder
-│   ├── llm.ts               # Groq API wrapper
+│   ├── llm.ts               # Core LLM interface
+│   ├── llmRouter.ts         # High-availability Groq/OpenRouter fallback logic
+│   ├── llmProviders.ts      # LLM Provider client configs
 │   ├── llmCache.ts          # Redis caching layer
 │   └── redis.ts             # Redis client (singleton)
 ├── components/        # Shared UI components
