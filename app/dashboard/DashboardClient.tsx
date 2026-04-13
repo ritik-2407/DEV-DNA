@@ -6,9 +6,10 @@ import { ResultDisplay } from "../components/ResultDisplay";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import ResultSkeleton from "../components/ResultSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, BarChart2, Zap } from "lucide-react";
+import { ArrowLeft, BarChart2, Zap, Swords } from "lucide-react";
 import StatsSection from "./sections/StatsSection";
 import ActionsSection from "./sections/ActionsSection";
+import PvpSection from "./sections/PvpSection";
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function DashboardClient() {
   const username = searchParams.get("username") || "";
   const activeAction = searchParams.get("action");
 
-  const [activeTab, setActiveTab] = useState<"stats" | "actions">("stats");
+  const [activeTab, setActiveTab] = useState<"stats" | "actions" | "pvp">("stats");
   const [loading, setLoading] = useState(false);
   const [showTimeoutHint, setShowTimeoutHint] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -105,6 +106,12 @@ export default function DashboardClient() {
                 active={activeTab === "actions"}
                 onClick={() => setActiveTab("actions")}
               />
+              <NavTab
+                label="PVP"
+                icon={<Swords className="w-3.5 h-3.5" />}
+                active={activeTab === "pvp"}
+                onClick={() => setActiveTab("pvp")}
+              />
             </div>
           </motion.header>
         )}
@@ -131,7 +138,7 @@ export default function DashboardClient() {
                   >
                     <StatsSection username={username} />
                   </motion.div>
-                ) : (
+                ) : activeTab === "actions" ? (
                   <motion.div
                     key="actions"
                     initial={{ opacity: 0, x: 16 }}
@@ -143,6 +150,16 @@ export default function DashboardClient() {
                       onRunAction={runAction}
                       onSwitchUser={handleSwitchUser}
                     />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="pvp"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 16 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <PvpSection username={username} />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -174,19 +191,7 @@ export default function DashboardClient() {
                 </ErrorBoundary>
               )}
 
-              <div className="flex items-center justify-between py-4 border-b border-white/5">
-                <button
-                  onClick={handleReturn}
-                  className="cursor-pointer flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest group"
-                >
-                  <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-                  Return to Hub
-                </button>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono bg-white/5 px-2 py-1 rounded">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  ACTION::{activeAction?.toUpperCase()}
-                </div>
-              </div>
+             
             </motion.div>
           )}
         </AnimatePresence>

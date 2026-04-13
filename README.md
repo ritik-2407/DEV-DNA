@@ -21,6 +21,16 @@ Every action returns strict JSON — no markdown, no fluff, directly parseable.
 
 ---
 
+## PvP Arena
+
+Go head-to-head with another developer in a high-energy, esports-style GitHub showdown. The system pulls and directly compares enriched metrics to determine a winner across key engineering pillars.
+
+- **5-Point Grading System:** Consistency, Output, Influence, Breadth, and Experience.
+- **Head-to-head Scoreboard:** Dynamic, emerald-themed progress bars that visually crown the winner (scored 0-10).
+- **AI Verdict:** A punchy, ruthless AI-generated summary highlighting exactly why one profile dominated the other.
+
+---
+
 ## How It Works
 
 ```
@@ -93,7 +103,9 @@ npm run dev
 app/
 ├── api/
 │   ├── ai/action/     # Core analysis endpoint
-│   └── github/profile/ # GitHub data endpoint
+│   ├── ai/pvp/        # PvP Arena AI verdict endpoint
+│   ├── github/profile/ # GitHub data endpoint
+│   └── github/pvp-profile/ # PvP specific GitHub data endpoint
 ├── dashboard/         # Analysis UI + result sections
 ├── lib/
 │   ├── githubFetch.ts       # Authenticated GitHub API calls
@@ -113,7 +125,6 @@ app/
 ## Future Updates
 
 
-- Profile Comparison of two users
 - Repository Analysis
 - Multiple platforms Analysis (LeetCode, HackerRank, etc.)
 
