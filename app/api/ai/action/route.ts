@@ -18,8 +18,8 @@ export async function POST(req: Request) {
       "unknown";
 
     const limit = await rateLimit(ip, "ai-action", {
-      limit: 5, // Increased to 20 for testing
-      windowSec: 60, // … per 60 seconds
+      limit: 5, 
+      windowSec: 60, 
     });
 
     if (!limit.allowed) {

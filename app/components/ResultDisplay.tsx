@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gavel , CheckCircle ,ArrowLeft, ChevronRight, Check, AlertCircle, Target, TrendingUp, Zap, Shield } from "lucide-react";
+import { Gavel, AlertCircle, Target, TrendingUp, Zap, Shield } from "lucide-react";
 
 // --- TYPES ---
 interface ActionResponse {
@@ -420,118 +420,4 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
     </div>
   );
 };
-
-// --- MAIN PAGE ---
-
-export default function AIActionsPage() {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<ActionResponse | null>(null);
-  const [activeAction, setActiveAction] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const actions = [
-    { key: "analyze", label: "Analyze", desc: "A comprehensive review of your profile", icon: Target },
-    { key: "suggest", label: "Suggest", desc: "Growth recommendations and roadmaps", icon: TrendingUp },
-    { key: "roast", label: "Roast", desc: "A candid critique of your code history", icon: Zap },
-    { key: "improve", label: "Improve", desc: "Specific repository optimizations", icon: Shield },
-  ];
-
-  async function runAction(action: string) {
-    setLoading(true);
-    setError(null);
-    setActiveAction(action);
-    try {
-      const res = await fetch("/api/ai/action", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
-      });
-      
-      const json = await res.json();
-      
-      if (!res.ok || !json.success) {
-        throw new Error(json.error || `Server error: ${res.status}`);
-      }
-      
-      setResult(json.data);
-    } catch (err: any) {
-      setError(err.message || "Request failed");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-[#050505] text-zinc-400 font-sans antialiased selection:bg-white selection:text-black">
-      <div className="max-w-4xl mx-auto px-8 py-32 relative z-10">
-        <AnimatePresence mode="wait">
-          {!activeAction ? (
-             <motion.div 
-               initial={{ opacity: 0, y: 10 }} 
-               animate={{ opacity: 1, y: 0 }} 
-               exit={{ opacity: 0, y: -10 }} 
-               className="space-y-16"
-             >
-                <div className="space-y-4">
-                  <h1 className="text-4xl font-light text-white tracking-tight"></h1>
-                  <p className="text-lg text-zinc-500 font-light">Choose an analysis to perform on your profile.</p>
-                </div>
-
-                <div className="space-y-2">
-                  {actions.map(a => (
-                    <button 
-                      key={a.key} 
-                      onClick={() => runAction(a.key)}
-                      className=" group flex items-center justify-between py-8 px-6 border border-zinc-900 rounded-lg w-full text-left transition-all hover:border-zinc-700 hover:bg-zinc-900/30"
-                    >
-                      <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 rounded-lg bg-zinc-900 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                          <a.icon className="w-5 h-5 text-zinc-500 group-hover:text-white transition-colors" />
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-white text-lg font-medium block">{a.label}</span>
-                          <span className="text-sm text-zinc-500 font-light">{a.desc}</span>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-zinc-800 group-hover:text-white transition-all transform group-hover:translate-x-1" />
-                    </button>
-                  ))}
-                </div>
-             </motion.div>
-          ) : (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <button 
-                onClick={() => { setActiveAction(null); setResult(null); setError(null); }}
-                className="mb-16 inline-flex items-center gap-3 text-sm text-zinc-500 hover:text-white transition-colors group"
-              >
-                <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" /> 
-                Back to dashboard
-              </button>
-              
-              {loading ? (
-                 <div className="flex flex-col items-center justify-start pt-8 pb-32 md:justify-center md:pt-32 space-y-8">
-                    <div className="w-16 h-16 border-2 border-zinc-800 border-t-white rounded-full animate-spin" />
-                    <p className="text-sm text-zinc-500 font-light tracking-widest uppercase">Analyzing your profile</p>
-                 </div>
-              ) : error ? (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-8 text-base text-red-400 bg-red-400/5 rounded-lg border border-red-400/20 flex items-start gap-4"
-                >
-                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <div>
-                    <div className="font-medium mb-1">Analysis Failed</div>
-                    <div className="text-sm text-red-400/70">{error}</div>
-                  </div>
-                </motion.div>
-              ) : (
-                <ResultDisplay action={activeAction} data={result!} />
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
+

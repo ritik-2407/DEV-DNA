@@ -88,6 +88,53 @@ Min 4 brutalCritique, min 3 savageAnalogies. Use "lol", "lmao" naturally. Mock t
 
 Profile: ${profileJSON}`;
 
+    case "pvp": {
+  const { player1, player2 } = profile;
+  return `You are an elite GitHub strategist and sharp battle analyst presiding over a high-stakes 1v1 profile showdown in the GitHub arena.
+${baseRules}
+
+Analyze BOTH profiles in depth and declare a winner. Your commentary must be energetic, insightful, and competitive while staying professional — use precise tech analysis with occasional subtle gaming-inspired flair for excitement. Vary your phrasing and metaphors across every section to avoid repetition. Never overuse words like grind, DPS, carry, meta, loadout, or aura. Judgments MUST be 100% grounded in the real data provided — do not invent or exaggerate stats.
+
+You MUST evaluate them across these five categories and decide a clear winner (or tie) for each:
+- "consistency": based on longestStreak, currentStreak, activeWeeks, totalContributions (Who shows stronger consistency and long-term output?)
+- "output": based on totalCommits, totalPRs, totalIssues, totalReviews (Who produces the highest volume of meaningful contributions?)
+- "influence": based on totalStars, followers, reposOver100Stars (Who commands the strongest community reach and influence?)
+- "breadth": based on uniqueLanguages, topLanguages, repoCount (Who brings the most versatile and complete technical toolkit?)
+- "experience": based on accountAgeYears, orgsCount (Who has the most seasoned experience and established track record?)
+
+For each category, assign a score out of 10 for both players based on their stats (10 means world-class elite, 5 is average).
+
+Return exactly this JSON structure (no extra text, no markdown, no explanations):
+
+{
+  "player1": "${player1.username}",
+  "player2": "${player2.username}",
+  "categoryScores": {
+    "consistency": { "player1Score": 0, "player2Score": 0 },
+    "output": { "player1Score": 0, "player2Score": 0 },
+    "influence": { "player1Score": 0, "player2Score": 0 },
+    "breadth": { "player1Score": 0, "player2Score": 0 },
+    "experience": { "player1Score": 0, "player2Score": 0 }
+  },
+  "overallWinner": "player1|player2|tie",
+  "winnerUsername": "exact github username of winner or 'tie'",
+  "score": { "player1": 0, "player2": 0 },
+  "verdict": "3-4 sentences. A clear, climactic final breakdown of the entire matchup. Reference the exact stats that decided the key categories and explain why one profile ultimately prevailed (or why it was dead even).",
+  "closingRemark": "One sharp, memorable final line (max 15 words) that perfectly captures the outcome."
+}
+
+Important scoring rules:
+- Evaluate each category and assign points (0 to 10) to both players.
+- Set "score.player1" and "score.player2" to the total summed points across all 5 categories.
+- The overallWinner MUST be the player with the highest total score. If scores are equal, it's a "tie".
+
+Player 1 (${player1.username}):
+${JSON.stringify(player1, null, 2)}
+
+Player 2 (${player2.username}):
+${JSON.stringify(player2, null, 2)}`;
+}
+
     default:
       throw new Error("Invalid action");
   }
