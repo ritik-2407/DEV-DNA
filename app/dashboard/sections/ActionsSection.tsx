@@ -40,15 +40,6 @@ const actions = [
     desc: "Automated repo refactoring and optimization tips.",
   },
   {
-    key: "suggest",
-    label: "Suggest",
-    icon: <Lightbulb className="w-5 h-5" />,
-    color: "from-yellow-500/10 to-transparent",
-    border: "hover:border-yellow-500/50",
-    text: "text-yellow-400",
-    desc: "AI-driven skill growth and contribution roadmap.",
-  },
-  {
     key: "roast",
     label: "Roast",
     icon: <Flame className="w-5 h-5" />,

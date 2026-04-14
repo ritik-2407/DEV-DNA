@@ -21,6 +21,7 @@ import {
   Shield,
   Bug,
   EyeOff,
+  Swords,
 } from "lucide-react";
 
 // ─── Animations ────────────────────────────────────────────────────────────────
@@ -279,8 +280,7 @@ export default function LandingPage() {
                   Five ways to decode your profile
                 </h2>
                 <p className="text-zinc-500 text-base max-w-lg mx-auto font-light">
-                  Each action analyzes your GitHub from a different angle.
-                  Every result is structured, grounded, and actionable.
+                  
                 </p>
               </motion.div>
 
@@ -308,18 +308,18 @@ export default function LandingPage() {
                     iconColor: "text-blue-400",
                   },
                   {
-                    icon: Lightbulb,
-                    label: "Suggest",
-                    desc: "High-leverage skills and project ideas to pursue",
-                    iconBox: "bg-yellow-500/10 border-yellow-500/20",
-                    iconColor: "text-yellow-400",
-                  },
-                  {
                     icon: Flame,
                     label: "Roast",
                     desc: "Brutally honest reality check with analogies that sting",
                     iconBox: "bg-red-500/10 border-red-500/20",
                     iconColor: "text-red-400",
+                  },
+                  {
+                    icon: Swords,
+                    label: "PvP",
+                    desc: "Compare two profiles head-to-head in a competitive GitHub arena",
+                    iconBox: "bg-purple-500/10 border-purple-500/20",
+                    iconColor: "text-purple-400",
                   },
                 ].map((action, i) => (
                   <motion.div
@@ -371,7 +371,7 @@ export default function LandingPage() {
                   How it works
                 </h2>
                 <p className="text-zinc-500 text-base max-w-lg mx-auto font-light">
-                  Three steps. No data stored. Live GitHub data every time.
+                  
                 </p>
               </motion.div>
 
@@ -386,7 +386,7 @@ export default function LandingPage() {
                   {
                     step: "02",
                     title: "Pick an Action",
-                    desc: "Choose analyze, judge, improve, suggest, or roast. Each one hits different signals in your profile.",
+                    desc: "Choose analyze, judge, improve, roast, or PvP. Each one hits different signals in your profile.",
                     icon: Zap,
                   },
                   {
@@ -441,17 +441,15 @@ export default function LandingPage() {
                   custom={0}
                   className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
                 >
-                  Ready to see what your
-                  <br />
-                  GitHub actually says?
+                  
+                  Try it out yourself!
                 </motion.h2>
                 <motion.p
                   variants={fadeUp}
                   custom={1}
                   className="text-zinc-500 text-base font-light"
                 >
-                  10 seconds to connect. No signup forms. No credit card. Just
-                  your GitHub and honest feedback.
+                  It'll only take a few seconds.
                 </motion.p>
                 <motion.div variants={fadeUp} custom={2} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-sm sm:max-w-none">
                   <input
@@ -464,9 +462,9 @@ export default function LandingPage() {
                   />
                   <button
                     onClick={handleGo}
-                    className="cursor-pointer group flex items-center justify-center gap-3 px-8 py-4 bg-white text-black text-sm font-bold rounded-lg hover:bg-emerald-400 transition-all duration-300 w-full sm:w-auto"
+                    className="cursor-pointer group flex items-center justify-center gap-3 px-6 py-3 bg-white text-black text-md font-bold rounded-lg hover:bg-emerald-400 transition-all duration-300 w-full sm:w-auto"
                   >
-                    Analyze
+                   Start
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </button>
                 </motion.div>

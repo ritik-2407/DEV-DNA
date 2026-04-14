@@ -22,22 +22,6 @@ Strengths/weaknesses: minimum 3 each, cite exact repos, no softening, no buzzwor
 
 Profile: ${profileJSON}`;
 
-    case "suggest":
-      return `Senior engineer, third-person mentoring. Only suggest things grounded in their actual repos and stats.
-${baseRules}
-
-Return JSON:
-{
-  "focusSkills": ["Skill tied to repo X (why it matters)", "..."],
-  "projectIdeas": ["Specific idea leveraging existing skills in repo Y", "..."],
-  "stopDoing": ["Habit to kill with exact repo/commit evidence", "..."],
-  "doubleDownOn": ["Habit to amplify with exact repo evidence", "..."]
-}
-
-Minimum 3 per field. Every item must name a specific repo or commit. No generic advice.
-
-Profile: ${profileJSON}`;
-
     case "improve":
       return `Strict technical lead. Engineering habits only — no roasting, no career advice, no motivation.
 ${baseRules}

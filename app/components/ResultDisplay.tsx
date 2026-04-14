@@ -14,11 +14,6 @@ interface ActionResponse {
   strengths?: string[];
   weaknesses?: string[];
   
-  // Suggest fields
-  focusSkills?: string[];
-  projectIdeas?: string[];
-  stopDoing?: string[];
-  doubleDownOn?: string[];
   
   // Improve fields
   improvements?: string[];
@@ -211,52 +206,7 @@ export const ResultDisplay = ({ action, data }: { action: string, data: ActionRe
         </motion.div>
       )}
 
-      {/* SUGGEST VIEW */}
-      {action === "suggest" && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-16"
-        >
-          <div className="grid md:grid-cols-2 gap-12">
-            {data.focusSkills && data.focusSkills.length > 0 && (
-              <InfoSection 
-                title="Skills to Focus On" 
-                items={data.focusSkills}
-                icon={Target}
-                variant="positive"
-              />
-            )}
-            {data.doubleDownOn && data.doubleDownOn.length > 0 && (
-              <InfoSection 
-                title="Double Down On" 
-                items={data.doubleDownOn}
-                icon={TrendingUp}
-                variant="positive"
-              />
-            )}
-          </div>
 
-          {data.projectIdeas && data.projectIdeas.length > 0 && (
-            <InfoSection 
-              title="Project Ideas" 
-              items={data.projectIdeas}
-              icon={Zap}
-              variant="warning"
-            />
-          )}
-
-          {data.stopDoing && data.stopDoing.length > 0 && (
-            <InfoSection 
-              title="Stop Doing" 
-              items={data.stopDoing}
-              icon={AlertCircle}
-              variant="negative"
-            />
-          )}
-        </motion.div>
-      )}
 
       {/* IMPROVE VIEW */}
       {action === "improve" && (
