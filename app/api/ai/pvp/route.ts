@@ -13,14 +13,17 @@ export async function POST(req: Request) {
       headersList.get("x-real-ip") ??
       "unknown";
 
-    const limit = await rateLimit(ip, "ai-pvp", { limit: 2, windowSec: 60 });
+    const limit = await rateLimit(ip, "ai-pvp", { limit: 2, windowSec: 86400 }); // 2 per day
 
     if (!limit.allowed) {
       return NextResponse.json(
-        { success: false, error: `Rate limit exceeded. Try again in ${limit.resetIn}s.` },
+        { success: false, error: `Daily limit reached. You have used all 2 battles for today. Resets in ${Math.ceil(limit.resetIn / 3600)}h.` },
         {
           status: 429,
           headers: {
+            "X-RateLimit-Limit": "2",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(limit.resetIn),
             "Retry-After": String(limit.resetIn),
           },
         }
@@ -86,10 +89,16 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      verdict,
-    });
+    return NextResponse.json(
+      { success: true, verdict },
+      {
+        headers: {
+          "X-RateLimit-Limit": "2",
+          "X-RateLimit-Remaining": String(limit.remaining),
+          "X-RateLimit-Reset": String(limit.resetIn),
+        },
+      }
+    );
   } catch (err: any) {
     console.error("PVP API crashed:", err);
     return NextResponse.json(
