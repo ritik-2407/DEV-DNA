@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Swords, Loader2, Zap, GitCommit, Users, Star, Ghost } from "lucide-react";
 
 type PvpPlayerState = {
@@ -23,6 +23,17 @@ export default function PvpSection({ username }: { username: string }) {
 
   const [lastFoughtP1, setLastFoughtP1] = useState("");
   const [lastFoughtP2, setLastFoughtP2] = useState("");
+
+  const [quota, setQuota] = useState<{ remaining: number; limit: number; resetIn: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/ai/rate-status?tag=ai-pvp")
+      .then((r) => r.json())
+      .then((json) => { if (json.success) setQuota(json); })
+      .catch(() => {/* silently fail */});
+  }, []);
+
+  const isExhausted = quota !== null && quota.remaining === 0;
 
   const startBattle = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +96,8 @@ export default function PvpSection({ username }: { username: string }) {
       setAiVerdict(aiJson.verdict);
       setLastFoughtP1(player1Name.trim());
       setLastFoughtP2(player2Name.trim());
+      // Optimistically decrement quota in UI
+      setQuota((prev) => prev ? { ...prev, remaining: Math.max(0, prev.remaining - 1) } : prev);
     } catch (err: any) {
       setAiError(err.message || "The AI judges refused to respond.");
     } finally {
@@ -97,7 +110,40 @@ export default function PvpSection({ username }: { username: string }) {
       {/* ── Header ── */}
       <div className="flex flex-col items-center justify-center text-center pt-4 pb-8 border-b border-white/5 mb-8">
         <h2 className="text-xl font-bold text-white mb-2 uppercase tracking-widest">Profile Comparison</h2>
-        
+
+        {/* ── Daily Quota Pill ── */}
+        {quota !== null && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className={`mt-8 mb-4 flex items-center gap-2 px-4 py-2 rounded-full border text-s font-bold backdrop-blur-sm transition-colors ${
+              isExhausted
+                ? "border-red-500/30 bg-red-500/10 text-red-400"
+                : quota.remaining <= 1
+                ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                : "border-emerald-500/20 bg-emerald-500/8 text-emerald-400"
+            }`}
+          >
+            <Swords className="w-3.5 h-3.5" />
+            {isExhausted ? (
+              <span>
+                Daily limit reached · Resets in{" "}
+                <span className="font-black">
+                  {quota.resetIn > 3600
+                    ? `${Math.ceil(quota.resetIn / 3600)}h`
+                    : `${Math.ceil(quota.resetIn / 60)}m`}
+                </span>
+              </span>
+            ) : (
+              <span>
+                <span className="font-black">{quota.remaining}</span>
+                <span className="text-zinc-500 font-normal"> / {quota.limit}</span>
+                <span className="text-zinc-500 font-normal ml-1">left </span>
+              </span>
+            )}
+          </motion.div>
+        )}
 
         <form onSubmit={startBattle} className="mt-8 flex flex-col items-center justify-center w-full max-w-md gap-4">
           <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-3">
@@ -123,6 +169,7 @@ export default function PvpSection({ username }: { username: string }) {
             type="submit"
             disabled={
               aiLoading ||
+              isExhausted ||
               !player1Name.trim() ||
               !player2Name.trim() ||
               (aiVerdict !== null &&
@@ -131,7 +178,13 @@ export default function PvpSection({ username }: { username: string }) {
             }
             className="cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-8 py-2.5 rounded-lg transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider flex items-center justify-center gap-2"
           >
-            {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Fight !"}
+            {aiLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isExhausted ? (
+              "Daily Limit Reached"
+            ) : (
+              "Fight !"
+            )}
           </button>
         </form>
       </div>

@@ -18,20 +18,20 @@ export async function POST(req: Request) {
       "unknown";
 
     const limit = await rateLimit(ip, "ai-action", {
-      limit: 5, 
-      windowSec: 60, 
+      limit: 4,
+      windowSec: 86400, // 24 hours
     });
 
     if (!limit.allowed) {
       return Response.json(
         {
           success: false,
-          error: `Rate limit exceeded. Try again in ${limit.resetIn}s.`,
+          error: `Daily limit reached. You have used all 4 actions for today. Resets in ${Math.ceil(limit.resetIn / 3600)}h.`,
         },
         {
           status: 429,
           headers: {
-            "X-RateLimit-Limit": "5",
+            "X-RateLimit-Limit": "4",
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": String(limit.resetIn),
             "Retry-After": String(limit.resetIn),
@@ -168,11 +168,20 @@ export async function POST(req: Request) {
     }
 
     //  Success
-    return Response.json({
-      success: true,
-      action,
-      data: parsed,
-    });
+    return Response.json(
+      {
+        success: true,
+        action,
+        data: parsed,
+      },
+      {
+        headers: {
+          "X-RateLimit-Limit": "4",
+          "X-RateLimit-Remaining": String(limit.remaining),
+          "X-RateLimit-Reset": String(limit.resetIn),
+        },
+      },
+    );
   } catch (err: any) {
     console.error("AI ACTION CRASHED:", err);
     return Response.json(

@@ -16,6 +16,15 @@ interface RateLimitResult {
   resetIn: number;
 }
 
+export interface RateLimitStatus {
+  /** How many requests are left in the current window */
+  remaining: number;
+  /** The total daily limit */
+  limit: number;
+  /** How many seconds until the window resets (0 if no window active) */
+  resetIn: number;
+}
+
 /**
  * IP-based rate limiter using Redis INCR + EXPIRE.
  *
@@ -53,4 +62,31 @@ export async function rateLimit(
   const resetIn = ttl > 0 ? ttl : windowSec;
 
   return { allowed, remaining, resetIn };
+}
+
+/**
+ * Read-only rate limit status — does NOT increment the counter.
+ * Safe to call from UI-facing status endpoints.
+ *
+ * @param ip        - The caller's IP address
+ * @param routeTag  - A short label for the route, e.g. "ai-action" or "ai-pvp"
+ * @param config    - { limit, windowSec }
+ */
+export async function getRateLimitStatus(
+  ip: string,
+  routeTag: string,
+  config: { limit: number; windowSec: number }
+): Promise<RateLimitStatus> {
+  const key = `rl:${routeTag}:${ip}`;
+
+  const [countRaw, ttl] = await Promise.all([
+    redisClient.get(key),
+    redisClient.ttl(key),
+  ]);
+
+  const count = countRaw ? parseInt(countRaw, 10) : 0;
+  const remaining = Math.max(0, config.limit - count);
+  const resetIn = ttl > 0 ? ttl : 0;
+
+  return { remaining, limit: config.limit, resetIn };
 }
