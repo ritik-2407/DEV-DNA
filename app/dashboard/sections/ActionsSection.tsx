@@ -61,7 +61,11 @@ export default function ActionsSection({
   onRunAction,
   onSwitchUser,
 }: ActionsSectionProps) {
-  const [quota, setQuota] = useState<{ remaining: number; limit: number; resetIn: number } | null>(null);
+  const [quota, setQuota] = useState<{
+    remaining: number;
+    limit: number;
+    resetIn: number;
+  } | null>(null);
 
   useEffect(() => {
     fetch("/api/ai/rate-status?tag=ai-action")
@@ -69,10 +73,10 @@ export default function ActionsSection({
       .then((json) => {
         if (json.success) setQuota(json);
       })
-      .catch(() => {/* silently fail */});
+      .catch(() => {
+        /* silently fail */
+      });
   }, []);
-
-  const isExhausted = quota !== null && quota.remaining === 0;
 
   return (
     <div className="space-y-12 pt-2">
@@ -80,58 +84,51 @@ export default function ActionsSection({
         <p className="text-zinc-400 text-base max-w-md font-medium leading-relaxed">
           Select an operation below !
         </p>
-
-        {/* ── Daily Quota Card ── */}
-        {quota !== null && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-full border text-xs font-bold backdrop-blur-sm transition-colors ${
-              isExhausted
-                ? "border-red-500/30 bg-red-500/10 text-red-400"
-                : quota.remaining <= 1
-                ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                : "border-emerald-500/20 bg-emerald-500/8 text-emerald-400"
-            }`}
-          >
-            <Zap className={`w-3.5 h-3.5 ${isExhausted ? "text-red-400" : quota.remaining <= 1 ? "text-amber-400" : "text-emerald-400"}`} />
-            {isExhausted ? (
-              <span>
-                Daily limit reached · Resets in{" "}
-                <span className="font-black">
-                  {quota.resetIn > 3600
-                    ? `${Math.ceil(quota.resetIn / 3600)}h`
-                    : `${Math.ceil(quota.resetIn / 60)}m`}
-                </span>
-              </span>
-            ) : (
-              <span>
-                <span className="font-black">{quota.remaining}</span>
-                <span className="text-zinc-500 font-normal"> / {quota.limit}</span>
-                <span className="text-zinc-500 font-normal ml-1">left</span>
-              </span>
-            )}
-          </motion.div>
-        )}
       </div>
 
       <div className="flex flex-col gap-4">
+        {/* ── Quota Text ── */}
+        {quota !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-end px-1 -mb-1"
+          >
+            <div className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">
+              {quota.remaining === 0 ? (
+                <span className="text-red-400">
+                  RECHARGING IN{" "}
+                  {quota.resetIn > 3600
+                    ? `${Math.ceil(quota.resetIn / 3600)}H`
+                    : `${Math.ceil(quota.resetIn / 60)}M`}
+                </span>
+              ) : (
+                <span>
+                  <span
+                    className={
+                      quota.remaining <= 1
+                        ? "text-amber-400"
+                        : "text-emerald-400"
+                    }
+                  >
+                    {quota.remaining}
+                  </span>{"  "}
+                  / {quota.limit} TODAY
+                </span>
+              )}
+            </div>
+          </motion.div>
+        )}
         {actions.map((a, i) => (
           <motion.button
             key={a.key}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 + i * 0.05 }}
-            whileHover={isExhausted ? {} : { scale: 1.02, x: 4 }}
-            whileTap={isExhausted ? {} : { scale: 0.98 }}
-            onClick={() => !isExhausted && onRunAction(a.key)}
-            disabled={isExhausted}
-            className={`group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 hover:shadow-2xl hover:shadow-black/50 ${
-              isExhausted
-                ? "opacity-40 cursor-not-allowed"
-                : `cursor-pointer ${a.border}`
-            }`}
+            whileHover={{ scale: 1.02, x: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onRunAction(a.key)}
+            className={`group relative p-5 rounded-xl border border-white/5 bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 text-left flex items-center gap-6 hover:shadow-2xl hover:shadow-black/50 cursor-pointer ${a.border}`}
           >
             <div
               className={`absolute inset-0 bg-linear-to-r ${a.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl`}

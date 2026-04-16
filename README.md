@@ -1,4 +1,3 @@
-
 # DEV DNA
 
 Analyzes any GitHub profile the way a senior engineer would — not stars and streaks, but patterns, depth, and signals.
@@ -12,7 +11,6 @@ Enter a GitHub username → get structured, LLM-powered evaluations grounded in 
 | Action | What it does |
 |--------|-------------|
 | **Analyze** | Evaluates your profile — skill level, strengths, blind spots, developer type |
-| **Suggest** | High-leverage suggestions tied to what's visible (or missing) on your GitHub |
 | **Improve** | Calls out missing engineering practices and structural weaknesses |
 | **Judge** | Judges your recent commit history — discipline, intent, and quality |
 | **Roast** | Brutally honest reality check with analogies. Stings because it's accurate |
@@ -47,6 +45,20 @@ No sign-in required. Every request fetches live GitHub data, so insights stay fr
 
 ---
 
+## Rate Limits
+
+Rate limits are enforced per IP using a fixed-window counter in Redis. The counter is only incremented when a **real LLM or GitHub API response** is returned — cached responses never burn quota.
+
+| Endpoint | Limit |
+|----------|-------|
+| Stats (GitHub profile lookup) | 5 requests / hour |
+| AI Actions (Analyze, Judge, Improve, Roast) | 4 requests / day |
+| PvP Arena | 2 battles / day |
+
+Remaining quota is displayed live in the UI on each section. Once the limit is hit, the backend returns a `429` with a reset time.
+
+---
+
 ## Constraints
 
 > **Public repositories only.**
@@ -67,7 +79,7 @@ This is by design: no authentication is required from the user, so the tool can 
 - **GitHub REST API** — repos, commits, events
 - **Groq** — Primary LLM inference
 - **OpenRouter** — Fallback LLM inference
-- **Redis (Upstash)** — response caching and fallback state tracking
+- **Redis (Upstash)** — response caching, rate limiting, and fallback state tracking
 - **Framer Motion** — animations
 - **Recharts** — data visualization
 - **TypeScript**
@@ -102,29 +114,29 @@ npm run dev
 ```
 app/
 ├── api/
-│   ├── ai/action/     # Core analysis endpoint
-│   ├── ai/pvp/        # PvP Arena AI verdict endpoint
-│   ├── github/profile/ # GitHub data endpoint
-│   └── github/pvp-profile/ # PvP specific GitHub data endpoint
-├── dashboard/         # Analysis UI + result sections
+│   ├── ai/action/          # Core analysis endpoint
+│   ├── ai/pvp/             # PvP Arena AI verdict endpoint
+│   ├── ai/rate-status/     # Read-only quota status endpoint (UI polling)
+│   ├── github/profile/     # GitHub stats data endpoint
+│   └── github/pvp-profile/ # PvP-specific GitHub data endpoint
+├── dashboard/              # Analysis UI + result sections
 ├── lib/
-│   ├── githubFetch.ts       # Authenticated GitHub API calls
+│   ├── githubFetch.ts          # Authenticated GitHub API calls
 │   ├── normalizeGitHubData.ts  # Raw API → clean profile
-│   ├── promptGenerator.ts   # Action-specific prompt builder
-│   ├── llm.ts               # Core LLM interface
-│   ├── llmRouter.ts         # High-availability Groq/OpenRouter fallback logic
-│   ├── llmProviders.ts      # LLM Provider client configs
-│   ├── llmCache.ts          # Redis caching layer
-│   └── redis.ts             # Redis client (singleton)
-├── components/        # Shared UI components
-└── LandingPage.tsx    # Landing page
+│   ├── promptGenerator.ts      # Action-specific prompt builder
+│   ├── llm.ts                  # Core LLM interface
+│   ├── llmRouter.ts            # High-availability Groq/OpenRouter fallback logic
+│   ├── llmProviders.ts         # LLM Provider client configs
+│   ├── llmCache.ts             # Redis caching layer
+│   ├── rateLimit.ts            # IP-based fixed-window rate limiter
+│   └── redis.ts                # Redis client (singleton)
+├── components/             # Shared UI components
+└── LandingPage.tsx         # Landing page
 ```
 
 ---
 
-## Future Updates
-
+## Potential Updates
 
 - Repository Analysis
 - Multiple platforms Analysis (LeetCode, HackerRank, etc.)
-

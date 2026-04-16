@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { rateLimit } from "@/app/lib/rateLimit";
+import { checkRateLimit, consumeRateLimit } from "@/app/lib/rateLimit";
 import { headers } from "next/headers";
 
 const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
@@ -52,18 +52,18 @@ export async function GET(req: Request) {
       headersList.get("x-real-ip") ??
       "unknown";
 
-    const limit = await rateLimit(ip, "github-profile", {
-      limit: 10,      // 20 requests …
-      windowSec: 60,  // … per 60 seconds
+    const limit = await checkRateLimit(ip, "github-profile", {
+      limit: 5,      // 5 requests …
+      windowSec: 3600,  // … per hour
     });
 
     if (!limit.allowed) {
       return NextResponse.json(
-        { error: `Rate limit exceeded. Try again in ${limit.resetIn}s.` },
+        { error: `Rate limit exceeded. Try again in ${Math.round(limit.resetIn/60)} minutes.` },
         {
           status: 429,
           headers: {
-            "X-RateLimit-Limit": "20",
+            "X-RateLimit-Limit": "5",
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": String(limit.resetIn),
             "Retry-After": String(limit.resetIn),
@@ -151,7 +151,16 @@ export async function GET(req: Request) {
       },
     };
 
-    return NextResponse.json(response);
+    // Charge quota only after a successful GitHub response
+    const consumed = await consumeRateLimit(ip, "github-profile", { limit: 5, windowSec: 3600 });
+
+    return NextResponse.json(response, {
+      headers: {
+        "X-RateLimit-Limit": "5",
+        "X-RateLimit-Remaining": String(consumed.remaining),
+        "X-RateLimit-Reset": String(consumed.resetIn),
+      },
+    });
   } catch (err: any) {
     console.error("GitHub profile API failed:", err);
     return NextResponse.json(

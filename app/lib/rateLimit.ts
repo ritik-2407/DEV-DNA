@@ -26,18 +26,14 @@ export interface RateLimitStatus {
 }
 
 /**
- * IP-based rate limiter using Redis INCR + EXPIRE.
+ * Read-only gate — checks whether the IP is still under the limit WITHOUT
+ * incrementing the counter. Use this at the top of a route to reject
+ * already-exhausted callers before doing any work.
  *
- * Strategy (Fixed Window):
- *   - On each request, INCR a key like `rl:<routeTag>:<ip>`
- *   - On the *first* request in a window, set the key to expire after `windowSec`
- *   - If the count exceeds `limit`, deny the request
- *
- * @param ip        - The caller's IP address (used as the unique identifier)
- * @param routeTag  - A short label for the route, e.g. "ai-action" or "github-profile"
- * @param config    - { limit, windowSec }
+ * Call `consumeRateLimit` later, only when you're ready to charge a use
+ * (e.g. after confirming the response didn't come from cache).
  */
-export async function rateLimit(
+export async function checkRateLimit(
   ip: string,
   routeTag: string,
   config: RateLimitConfig
@@ -45,16 +41,38 @@ export async function rateLimit(
   const { limit, windowSec } = config;
   const key = `rl:${routeTag}:${ip}`;
 
-  // INCR atomically increments the counter and creates the key if it doesn't exist.
-  // If the key is new (count === 1) we set its TTL so it auto-expires after the window.
+  const [countRaw, ttl] = await Promise.all([
+    redisClient.get(key),
+    redisClient.ttl(key),
+  ]);
+
+  const count = countRaw ? parseInt(countRaw, 10) : 0;
+  const allowed = count < limit;
+  const remaining = Math.max(0, limit - count);
+  const resetIn = ttl > 0 ? ttl : windowSec;
+
+  return { allowed, remaining, resetIn };
+}
+
+/**
+ * Increments the counter for the given IP + route, setting a TTL on the
+ * first request of a window. Call this only after a real LLM response
+ * (i.e. not a cache hit) to avoid burning quota unnecessarily.
+ */
+export async function consumeRateLimit(
+  ip: string,
+  routeTag: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  const { limit, windowSec } = config;
+  const key = `rl:${routeTag}:${ip}`;
+
   const count = await redisClient.incr(key);
 
   if (count === 1) {
-    // First request in this window — set the expiry
     await redisClient.expire(key, windowSec);
   }
 
-  // Fetch the remaining TTL so we can report it back in the response headers
   const ttl = await redisClient.ttl(key);
 
   const allowed = count <= limit;
