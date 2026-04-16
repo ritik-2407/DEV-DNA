@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { rateLimit } from "@/app/lib/rateLimit";
+import { checkRateLimit } from "@/app/lib/rateLimit";
 import { headers } from "next/headers";
 
 const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
@@ -78,7 +78,7 @@ export async function GET(req: Request) {
       headersList.get("x-real-ip") ??
       "unknown";
 
-    const limit = await rateLimit(ip, "github-pvp-profile", {
+    const limit = await checkRateLimit(ip, "github-pvp-profile", {
       limit: 2,
       windowSec: 60,
     });

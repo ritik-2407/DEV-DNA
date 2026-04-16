@@ -16,7 +16,9 @@ export default function StatsSection({ username }: { username: string }) {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch(`/api/github/profile?username=${encodeURIComponent(username)}`);
+        const res = await fetch(
+          `/api/github/profile?username=${encodeURIComponent(username)}`,
+        );
         if (res.ok) {
           setData(await res.json());
         } else {
@@ -35,7 +37,7 @@ export default function StatsSection({ username }: { username: string }) {
 
   const weeklyCommits: number[] =
     data?.contributions?.weeks?.map((week: any[]) =>
-      week.reduce((sum, day) => sum + day.count, 0)
+      week.reduce((sum, day) => sum + day.count, 0),
     ) ?? [];
 
   if (loading) {
@@ -51,7 +53,7 @@ export default function StatsSection({ username }: { username: string }) {
 
   if (error) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="mt-8 p-8 text-base text-red-400 bg-red-400/5 rounded-lg border border-red-400/20 flex flex-col items-center justify-center text-center gap-4"
@@ -92,8 +94,6 @@ export default function StatsSection({ username }: { username: string }) {
 
       {/* Commit Activity */}
       <CommitActivity weeklyCommits={weeklyCommits} />
-
-      
     </div>
   );
 }

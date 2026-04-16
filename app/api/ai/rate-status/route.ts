@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 const CONFIGS: Record<string, { limit: number; windowSec: number }> = {
   "ai-action": { limit: 4, windowSec: 86400 },
   "ai-pvp": { limit: 2, windowSec: 86400 },
+  "github-profile": { limit: 5, windowSec: 3600 },
 };
 
 export async function GET(req: Request) {

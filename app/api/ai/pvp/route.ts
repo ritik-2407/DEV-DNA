@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { rateLimit } from "@/app/lib/rateLimit";
+import { checkRateLimit, consumeRateLimit } from "@/app/lib/rateLimit";
 import { headers } from "next/headers";
 import { buildPrompt } from "@/app/lib/promptGenerator";
 import { runLLM } from "@/app/lib/llm";
@@ -13,18 +13,18 @@ export async function POST(req: Request) {
       headersList.get("x-real-ip") ??
       "unknown";
 
-    const limit = await rateLimit(ip, "ai-pvp", { limit: 2, windowSec: 86400 }); // 2 per day
+    const limitCheck = await checkRateLimit(ip, "ai-pvp", { limit: 2, windowSec: 86400 });
 
-    if (!limit.allowed) {
+    if (!limitCheck.allowed) {
       return NextResponse.json(
-        { success: false, error: `Daily limit reached. You have used all 2 battles for today. Resets in ${Math.ceil(limit.resetIn / 3600)}h.` },
+        { success: false, error: `Daily limit reached. You have used all 2 battles for today. Resets in ${Math.ceil(limitCheck.resetIn / 3600)}h.` },
         {
           status: 429,
           headers: {
             "X-RateLimit-Limit": "2",
             "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": String(limit.resetIn),
-            "Retry-After": String(limit.resetIn),
+            "X-RateLimit-Reset": String(limitCheck.resetIn),
+            "Retry-After": String(limitCheck.resetIn),
           },
         }
       );
@@ -72,7 +72,6 @@ export async function POST(req: Request) {
 
     if (!raw) throw new Error("Empty LLM response");
 
-    // ── Parse LLM response ────────────────────────────────────────────────────
     let verdict: any;
     try {
       const cleanRaw = raw
@@ -89,13 +88,16 @@ export async function POST(req: Request) {
       );
     }
 
+    // Only charge the quota after a real LLM response was successfully parsed
+    const consumed = await consumeRateLimit(ip, "ai-pvp", { limit: 2, windowSec: 86400 });
+
     return NextResponse.json(
       { success: true, verdict },
       {
         headers: {
           "X-RateLimit-Limit": "2",
-          "X-RateLimit-Remaining": String(limit.remaining),
-          "X-RateLimit-Reset": String(limit.resetIn),
+          "X-RateLimit-Remaining": String(consumed.remaining),
+          "X-RateLimit-Reset": String(consumed.resetIn),
         },
       }
     );
