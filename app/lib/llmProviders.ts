@@ -9,7 +9,7 @@ export const groqClient = new Groq({
   apiKey: process.env.GROK_API_KEY!,
 })
 
-export const GROQ_MODEL = "llama-3.3-70b-versatile"
+export const GROQ_MODEL = "openai/gpt-oss-120b"
 
 // --- OpenRouter (fallback) ---
 export const openRouterClient = new OpenAI({
